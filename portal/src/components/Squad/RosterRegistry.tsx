@@ -34,7 +34,7 @@ export default function RosterRegistry({
         await updateInvitation.mutateAsync({
           invitationId: player.invitationId,
           data: {
-            benchType: type,
+            benchType: type
           },
         });
       },
