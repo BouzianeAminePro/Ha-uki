@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: play-me-db
+    env_file:
+      - .env
+    ports:
+      - "5432:5432"
+    volumes:
+      - play-me_data:/var/lib/postgresql/data
+      - /docker/db/init_db.sh:/docker-entrypoint-initdb.d/init_db.sh
+  grafana:
+    container_name: grafana_play-me
+    image: grafana/grafana:latest
+    user: "0:0"
+    environment:
+      GF_DATABASE_TYPE: postgres
+      GF_DATABASE_HOST: postgres:5432
+      GF_DATABASE_NAME: postgres
+      GF_DATABASE_USER: postgres
+      GF_DATABASE_PASSWORD: postgres
+      GF_DATABASE_SSL_MODE: disable
+    restart: unless-stopped
+    depends_on:
+        - postgres
+    ports:
+      - 3111:3000
+    volumes:
+      - grafana_play-me:/var/lib/grafana
+
+volumes:
+  grafana_play-me:
+    driver: local
+  play-me_data:
+    driver: local
+

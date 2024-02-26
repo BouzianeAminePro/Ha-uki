@@ -1,0 +1,85 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model Account {
+    id                 String    @id @default(cuid())
+    userId             String
+    providerType       String
+    providerId         String
+    providerAccountId  String    @map("provider_account_id")
+    refreshToken       String?
+    accessToken        String?
+    accessTokenExpires DateTime?
+    createdAt          DateTime  @default(now())
+    updatedAt          DateTime
+    user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@unique([providerId, providerAccountId])
+    @@map("accounts")
+}
+
+model Session {
+    id           String   @id @default(cuid())
+    userId       String
+    expires      DateTime
+    sessionToken String   @unique
+    accessToken  String   @unique
+    createdAt    DateTime @default(now())
+    updatedAt    DateTime
+    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+    identifier String
+    token      String   @unique
+    expires    DateTime
+
+    @@unique([identifier, token])
+    @@map("verificationtokens")
+}
+
+model User {
+    id            String       @id @default(cuid())
+    name          String?
+    email         String?      @unique
+    emailVerified DateTime?
+    image         String?
+    createdAt     DateTime     @default(now())
+    updatedAt     DateTime     @updatedAt
+    accounts      Account[]
+    sessions      Session[]
+    Invitation    Invitation[]
+}
+
+model Game {
+    id         String       @id @default(cuid())
+    maxPlayers Int?         @default(0)
+    active     Boolean?
+    name       String?
+    startDate  DateTime?
+    endDate    DateTime?
+    createdAt  DateTime?    @default(now()) @map("created_at")
+    updatedAt  DateTime?    @updatedAt @map("updated_at")
+    Invitation Invitation[]
+}
+
+model Invitation {
+    id        String     @id @default(cuid())
+    answer    Boolean?
+    gameId    String?
+    userId    String?
+    benchType BenchType?
+    game      Game?      @relation(fields: [gameId], references: [id])
+    user      User?      @relation(fields: [userId], references: [id])
+}
+
+enum BenchType {
+    OFFICIAL
+    RESERVE
+}
