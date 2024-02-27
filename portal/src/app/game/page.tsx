@@ -5,12 +5,7 @@ import { cn } from "@/lib";
 import GameCard from "@/components/GameCard/GameCard";
 
 export default async function Page() {
-  let games = {} as AxiosResponse;
-  // try {
-  //   games = await axios.get(`${process.env.SERVER_URL}/api/game`);
-  // } catch(e) {
-  //   console.log(e);
-  // }
+  const games = await axios.get(`${process.env.SERVER_URL}/api/game`);
 
   return (
     <div className={cn("flex flex-col gap-y-2 w-[300px]")}>
