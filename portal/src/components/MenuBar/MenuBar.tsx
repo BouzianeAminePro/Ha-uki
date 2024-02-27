@@ -12,7 +12,6 @@ import { ModeToggle } from "../ui/theme-toggler";
 
 export default function MenuBar() {
   const { status } = useSession();
-  console.log(status)
   return (
     <div className={cn("flex flex-row m-2 md:justify-around")}>
       <Link href="/" className={cn("flex flex-row items-center")}>

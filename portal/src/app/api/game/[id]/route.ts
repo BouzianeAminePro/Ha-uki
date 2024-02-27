@@ -63,7 +63,6 @@ export async function POST(request: NextRequest, { params: { id } }) {
     });
     return NextResponse.json(game);
   } catch (e) {
-    console.log(e);
     return NextResponse.json(null, {
       status: 400,
       statusText: "Missing or wrong information",
