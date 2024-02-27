@@ -12,7 +12,7 @@ const nextConfig = {
       },
       {
         source: "/portal/:path*",
-        destination: `${process.env.PORTAL_URL}/portal/:path*`,
+        destination: `${process.env.PORTAL_URL}/:path*`,
       },
     ];
   },
