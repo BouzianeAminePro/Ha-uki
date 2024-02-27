@@ -34,7 +34,7 @@ export default function MenuBar() {
               <Button
                 variant="outline"
                 size="icon"
-                onClick={() => signIn("", { callbackUrl: "/game" })}
+                onClick={() => signIn("", { callbackUrl: `/${process.env.NEXT_PUBLIC_BASE_PATH}/game` })}
               >
                 <EnterIcon />
               </Button>
