@@ -22,7 +22,7 @@ export default function Provider({
   children: ReactNode;
 }) {
   return (
-    <SessionProvider session={session} basePath={`/${process.env.NEXT_PUBLIC_BASE_PATH}/api/auth`}>
+    <SessionProvider session={session}>
       <QueryClientProvider
         client={
           new QueryClient({
