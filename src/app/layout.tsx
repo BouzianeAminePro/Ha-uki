@@ -8,17 +8,17 @@ import { cn } from "@/lib/utils";
 import Provider from "@/components/Provider/Provider";
 import MenuBar from "@/components/MenuBar/MenuBar";
 import { Toaster } from "@/components/ui/toaster";
+import Footer from "@/components/Footer/Footer";
 
 export const metadata: Metadata = {
-  title: "Play-me",
+  title: "Sportify",
   description: "Pour le publique sportif",
 };
 
-
 const dosis = Dosis({
-  weight: '400',
-  subsets: ['latin'],
-})
+  weight: "400",
+  subsets: ["latin"],
+});
 
 export default function RootLayout({
   session,
@@ -39,6 +39,7 @@ export default function RootLayout({
           </div>
           <Toaster />
         </Provider>
+        <Footer />
       </body>
     </html>
   );

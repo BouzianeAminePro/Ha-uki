@@ -16,7 +16,7 @@ export default function MenuBar() {
     <div className={cn("flex flex-row m-2 md:justify-around")}>
       <Link href="/" className={cn("flex flex-row items-center")}>
         <Image
-          src="/portal/images/logo/logo-black&white.svg"
+          src="/images/logo/logo-black&white.svg"
           width={50}
           height={50}
           alt="logo"
@@ -34,7 +34,7 @@ export default function MenuBar() {
               <Button
                 variant="outline"
                 size="icon"
-                onClick={() => signIn("", { callbackUrl: `/${process.env.NEXT_PUBLIC_BASE_PATH}/game` })}
+                onClick={() => signIn("", { callbackUrl: `/game` })}
               >
                 <EnterIcon />
               </Button>
