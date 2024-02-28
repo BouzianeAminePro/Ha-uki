@@ -3,15 +3,21 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import { EnterIcon, ExitIcon } from "@radix-ui/react-icons";
+import { EnterIcon, ExitIcon, HomeIcon } from "@radix-ui/react-icons";
 import { signIn, signOut, useSession } from "next-auth/react";
 
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
 import { ModeToggle } from "../ui/theme-toggler";
+import { usePathname, useRouter } from "next/navigation";
+import { useMemo } from "react";
 
 export default function MenuBar() {
   const { status } = useSession();
+  const { push } = useRouter();
+  const pathname = usePathname();
+  const isShowCasePage = useMemo(() => pathname === "/", [pathname]);
+
   return (
     <div className={cn("flex flex-row m-2 md:justify-around")}>
       <Link href="/" className={cn("flex flex-row items-center")}>
@@ -39,13 +45,26 @@ export default function MenuBar() {
                 <EnterIcon />
               </Button>
             ) : (
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => signOut({ callbackUrl: "/" })}
-              >
-                <ExitIcon />
-              </Button>
+              <>
+                {isShowCasePage ? (
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => push("/game")}
+                  >
+                    <HomeIcon />
+                  </Button>
+                ) : (
+                  <></>
+                )}
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => signOut({ callbackUrl: "/" })}
+                >
+                  <ExitIcon />
+                </Button>
+              </>
             )
           ) : (
             <></>

@@ -2,13 +2,13 @@ import type { Metadata } from "next";
 import { Dosis } from "next/font/google";
 
 import { Session } from "next-auth";
+import NextTopLoader from "nextjs-toploader";
 
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import Provider from "@/components/Provider/Provider";
 import MenuBar from "@/components/MenuBar/MenuBar";
 import { Toaster } from "@/components/ui/toaster";
-import Footer from "@/components/Footer/Footer";
 
 export const metadata: Metadata = {
   title: "Sportify",
@@ -30,16 +30,18 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning={true}>
       <body className={cn(dosis.className)} suppressHydrationWarning={true}>
+        <NextTopLoader
+          initialPosition={0.08}
+          height={3}
+          color="#4b5563"
+          crawl={true}
+          showSpinner={false}
+        />
         <Provider session={session}>
           <MenuBar />
-          <div
-            className={cn("h-screen w-full flex items-center justify-center")}
-          >
-            {children}
-          </div>
+          {children}
           <Toaster />
         </Provider>
-        <Footer />
       </body>
     </html>
   );

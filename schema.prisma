@@ -7,43 +7,6 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-model Account {
-    id                 String    @id @default(cuid())
-    userId             String
-    providerType       String
-    providerId         String
-    providerAccountId  String    @map("provider_account_id")
-    refreshToken       String?
-    accessToken        String?
-    accessTokenExpires DateTime?
-    createdAt          DateTime  @default(now())
-    updatedAt          DateTime
-    user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-    @@unique([providerId, providerAccountId])
-    @@map("accounts")
-}
-
-model Session {
-    id           String   @id @default(cuid())
-    userId       String
-    expires      DateTime
-    sessionToken String   @unique
-    accessToken  String   @unique
-    createdAt    DateTime @default(now())
-    updatedAt    DateTime
-    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model VerificationToken {
-    identifier String
-    token      String   @unique
-    expires    DateTime
-
-    @@unique([identifier, token])
-    @@map("verificationtokens")
-}
-
 model User {
     id            String       @id @default(cuid())
     name          String?
@@ -52,21 +15,23 @@ model User {
     image         String?
     createdAt     DateTime     @default(now())
     updatedAt     DateTime     @updatedAt
-    accounts      Account[]
-    sessions      Session[]
     Invitation    Invitation[]
+    Game          Game[]
 }
 
 model Game {
     id         String       @id @default(cuid())
+    createdBy  User         @relation(fields: [userId], references: [id])
     maxPlayers Int?         @default(0)
     active     Boolean?
     name       String?
+    public     Boolean?
     startDate  DateTime?
     endDate    DateTime?
     createdAt  DateTime?    @default(now()) @map("created_at")
     updatedAt  DateTime?    @updatedAt @map("updated_at")
     Invitation Invitation[]
+    userId     String
 }
 
 model Invitation {

@@ -1,4 +1,5 @@
 import { PrismaClientInstance } from "@/lib";
+import { transporter } from "@/services";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
@@ -25,4 +26,15 @@ export async function GET(request: NextRequest) {
   });
 
   return NextResponse.json({ records: games, count: games.length });
+}
+
+export async function POST(request: NextRequest) {
+  // TODO it does work, you should use it on post (create game) and patch game/:id when invitation part is updated
+  await transporter.sendMail({
+    to: process.env.GMAIL_APP_MAIL,
+    subject: "test node_mailer",
+    text: "Test invite",
+  });
+
+  return NextResponse.json({});
 }
