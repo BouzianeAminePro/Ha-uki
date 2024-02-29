@@ -49,25 +49,23 @@ export default function MenuBar() {
           {status === "loading" ? (
             <></>
           ) : (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Avatar>
-                  <AvatarImage src={session?.user?.image ?? ""} width={5} />
-                </Avatar>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="min-w-[20px]">
-                {status === "unauthenticated" ? (
-                  <DropdownMenuItem>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => signIn("", { callbackUrl: `/game` })}
-                    >
-                      <EnterIcon />
-                    </Button>
-                  </DropdownMenuItem>
-                ) : (
-                  <>
+            <>
+              {status === "unauthenticated" ? (
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => signIn("", { callbackUrl: `/game` })}
+                >
+                  <EnterIcon />
+                </Button>
+              ) : (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Avatar>
+                      <AvatarImage src={session?.user?.image ?? ""} width={5} />
+                    </Avatar>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="min-w-[20px]">
                     {isShowCasePage ? (
                       <DropdownMenuItem onClick={() => push("/game")}>
                         <HomeIcon />
@@ -80,10 +78,10 @@ export default function MenuBar() {
                     >
                       <ExitIcon />
                     </DropdownMenuItem>
-                  </>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
+            </>
           )}
         </div>
       </div>
