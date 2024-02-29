@@ -2,6 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+
+import { useMemo } from "react";
 
 import { EnterIcon, ExitIcon, HomeIcon } from "@radix-ui/react-icons";
 import { signIn, signOut, useSession } from "next-auth/react";
@@ -9,14 +12,21 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
 import { ModeToggle } from "../ui/theme-toggler";
-import { usePathname, useRouter } from "next/navigation";
-import { useMemo } from "react";
+import { Avatar, AvatarImage } from "../ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 
 export default function MenuBar() {
-  const { status } = useSession();
   const { push } = useRouter();
   const pathname = usePathname();
+
   const isShowCasePage = useMemo(() => pathname === "/", [pathname]);
+
+  const { status, data: session } = useSession();
 
   return (
     <div className={cn("flex flex-row m-2 md:justify-around")}>
@@ -29,47 +39,52 @@ export default function MenuBar() {
           className={cn("dark:invert")}
           priority={false}
         />
-        <span className={cn("text-sm text-muted-foreground")}>Sportify</span>
+        <span className={cn("text-sm text-muted-foreground")}>{"ha'uki"}</span>
       </Link>
 
       {/* auth and theme toggle */}
       <div className={cn("ml-auto md:ml-0")}>
         <div className={cn("flex flex-row gap-x-2")}>
-          {status !== "loading" ? (
-            status === "unauthenticated" ? (
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => signIn("", { callbackUrl: `/game` })}
-              >
-                <EnterIcon />
-              </Button>
-            ) : (
-              <>
-                {isShowCasePage ? (
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => push("/game")}
-                  >
-                    <HomeIcon />
-                  </Button>
-                ) : (
-                  <></>
-                )}
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => signOut({ callbackUrl: "/" })}
-                >
-                  <ExitIcon />
-                </Button>
-              </>
-            )
-          ) : (
-            <></>
-          )}
           <ModeToggle />
+          {status === "loading" ? (
+            <></>
+          ) : (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Avatar>
+                  <AvatarImage src={session?.user?.image ?? ""} width={5} />
+                </Avatar>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="min-w-[20px]">
+                {status === "unauthenticated" ? (
+                  <DropdownMenuItem>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => signIn("", { callbackUrl: `/game` })}
+                    >
+                      <EnterIcon />
+                    </Button>
+                  </DropdownMenuItem>
+                ) : (
+                  <>
+                    {isShowCasePage ? (
+                      <DropdownMenuItem onClick={() => push("/game")}>
+                        <HomeIcon />
+                      </DropdownMenuItem>
+                    ) : (
+                      <></>
+                    )}
+                    <DropdownMenuItem
+                      onClick={() => signOut({ callbackUrl: "/" })}
+                    >
+                      <ExitIcon />
+                    </DropdownMenuItem>
+                  </>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </div>
       </div>
     </div>

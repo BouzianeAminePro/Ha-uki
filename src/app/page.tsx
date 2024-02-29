@@ -10,7 +10,7 @@ export default function Home() {
             "scroll-m-20 text-xl md:text-3xl font-extrabold tracking-tight w-[25ch]"
           )}
         >
-          {"Your Play, Your Way: Effortless Game Planning with Sportify"}
+          {"Your Play, Your Way: Effortless Game Planning with ha'uki"}
         </h1>
         <blockquote className={cn("mt-6 border-l-2 pl-6 italic")}>
           Where Every Game Finds Its Perfect Moment!

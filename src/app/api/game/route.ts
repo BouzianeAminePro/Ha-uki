@@ -1,7 +1,6 @@
-import { PrismaClientInstance } from "@/lib";
-import { transporter } from "@/services";
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
+
+import { gameService, sessionService, transporter } from "@/services";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -11,19 +10,13 @@ export async function GET(request: NextRequest) {
     whereClause = { [key]: JSON.parse(value) };
   });
 
-  // TODO so i can get the games of the current session user (use inviation for that)
-  // TODO middleware would intercept and set sesion user each time on the request
-  const prismaClient = PrismaClientInstance.getInstance();
-  const games = await prismaClient.game.findMany({
-    where: whereClause,
-    include: {
-      Invitation: {
-        select: {
-          answer: true,
-        },
-      },
-    },
-  });
+  const user = await sessionService.getCurrentSessionUser();
+
+  if (user) {
+    whereClause = { ...whereClause, userId: user?.id };
+  }
+
+  const games = await gameService.findAll(whereClause);
 
   return NextResponse.json({ records: games, count: games.length });
 }

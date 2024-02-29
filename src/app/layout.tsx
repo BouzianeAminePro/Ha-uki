@@ -11,7 +11,7 @@ import MenuBar from "@/components/MenuBar/MenuBar";
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
-  title: "Sportify",
+  title: "ha'uki",
   description: "Pour le publique sportif",
 };
 

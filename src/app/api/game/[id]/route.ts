@@ -1,9 +1,7 @@
-import { PrismaClientInstance } from "@/lib";
+import { gameService } from "@/services";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function GET(_, { params: { id } }) {
-  const prismaClient = PrismaClientInstance.getInstance();
-
   if (!id) {
     return NextResponse.json(null, {
       status: 400,
@@ -11,22 +9,7 @@ export async function GET(_, { params: { id } }) {
     });
   }
 
-  const game = await prismaClient.game.findUnique({
-    where: { id },
-    include: {
-      Invitation: {
-        include: {
-          user: {
-            select: {
-              email: true,
-              image: true,
-              name: true,
-            },
-          },
-        },
-      },
-    },
-  });
+  const game = await gameService.findById(id);
 
   if (!game) {
     return NextResponse.json(null, {
@@ -38,29 +21,10 @@ export async function GET(_, { params: { id } }) {
   return NextResponse.json(game);
 }
 
-export async function POST(request: NextRequest, { params: { id } }) {
-  const body = await request.json();
-
-  const prismaClient = PrismaClientInstance.getInstance();
-
-  if (!id)
-    return NextResponse.json(
-      { message: "This id mandotary for this request" },
-      { status: 400 }
-    );
-
-  let game = await prismaClient.game.findUnique({ where: { id } });
-
-  if (game) {
-    return NextResponse.redirect(
-      new URL(`/game/${game?.id}`, process.env.SERVER_URL)
-    );
-  }
-
+export async function PATCH(request: NextRequest, { params: { id } }) {
   try {
-    game = await prismaClient.game.create({
-      data: body,
-    });
+    const body = await request.json();
+    const game = await gameService.updateById(body, id);
     return NextResponse.json(game);
   } catch (e) {
     return NextResponse.json(null, {
