@@ -27,10 +27,10 @@ export default function Player({
         isDragging: !!monitor.isDragging(),
       }),
     }),
-    []
+    [image, email, name, answer, invitationId]
   );
   return (
-    <div className={cn("flex items-center")} ref={drag}>
+    <div className={cn("flex items-center cursor-pointer")} ref={drag}>
       <Avatar className="h-9 w-9">
         <AvatarImage src={image ?? ""} alt="Avatar" />
       </Avatar>

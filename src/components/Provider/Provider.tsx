@@ -13,6 +13,7 @@ import {
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
+import { useToast } from "../ui/use-toast";
 
 export default function Provider({
   session,
@@ -21,6 +22,7 @@ export default function Provider({
   session: Session | null | undefined;
   children: ReactNode;
 }) {
+  const { toast } = useToast();
   return (
     <SessionProvider session={session}>
       <QueryClientProvider
@@ -32,6 +34,13 @@ export default function Provider({
               mutations: {
                 // which converts to 5 minutes
                 gcTime: 300000,
+                onError() {
+                  toast({
+                    variant: "destructive",
+                    title: "Error on server call",
+                    description: "Error server side",
+                  });
+                }
               },
             },
           })

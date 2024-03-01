@@ -22,12 +22,26 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  // TODO it does work, you should use it on post (create game) and patch game/:id when invitation part is updated
-  await transporter.sendMail({
-    to: process.env.GMAIL_APP_MAIL,
-    subject: "test node_mailer",
-    text: "Test invite",
+  const body = await request.json();
+  const { invitations = [] } = body;
+  delete body.invitations;
+
+  const user = await sessionService.getCurrentSessionUser();
+
+  // TODO make a field in invitation that the mail is sent so i can filter and don't send again an email
+  // invitations.forEach(
+  //   async (invitation) =>
+  //     await transporter.sendMail({
+  //       to: invitation,
+  //       subject: "test node_mailer",
+  //       text: "Test invite",
+  //     })
+  // );
+
+  const game = await gameService.create({
+    ...body,
+    userId: user ? user?.id : null,
   });
 
-  return NextResponse.json({});
+  return NextResponse.json(game);
 }

@@ -48,16 +48,18 @@ export default function RosterRegistry({
           <CardTitle>{type ?? "MAIN"} squad</CardTitle>
         </CardHeader>
         <CardContent className={cn("flex flex-col gap-y-3 w-full h-full")}>
-          {roster?.map(({ image, name, answer, email, ...player }, index) => (
-            <Player
-              key={index}
-              image={image}
-              name={name}
-              answer={answer}
-              email={email}
-              {...player}
-            />
-          ))}
+          {roster?.map(
+            ({ image, name, answer, email, ...player }, index: number) => (
+              <Player
+                key={index}
+                image={image}
+                name={name}
+                answer={answer}
+                email={email}
+                {...player}
+              />
+            )
+          )}
         </CardContent>
       </Card>
     </div>

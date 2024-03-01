@@ -6,7 +6,12 @@ import { usePathname, useRouter } from "next/navigation";
 
 import { useMemo } from "react";
 
-import { EnterIcon, ExitIcon, HomeIcon } from "@radix-ui/react-icons";
+import {
+  AvatarIcon,
+  EnterIcon,
+  ExitIcon,
+  HomeIcon,
+} from "@radix-ui/react-icons";
 import { signIn, signOut, useSession } from "next-auth/react";
 
 import { Button } from "../ui/button";
@@ -61,9 +66,15 @@ export default function MenuBar() {
               ) : (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Avatar>
-                      <AvatarImage src={session?.user?.image ?? ""} width={5} />
-                    </Avatar>
+                    {session?.user?.image ? (
+                      <Avatar>
+                        <AvatarImage src={session?.user?.image ?? ""} />
+                      </Avatar>
+                    ) : (
+                      <Button variant="outline" size="icon">
+                        <AvatarIcon />
+                      </Button>
+                    )}
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="min-w-[20px]">
                     {isShowCasePage ? (

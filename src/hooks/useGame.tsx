@@ -2,9 +2,14 @@
 
 import { useMemo } from "react";
 import axios, { AxiosError, AxiosResponse } from "axios";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useToast } from "@/components/ui/use-toast";
+import { QueryKeys } from "@/consts";
 
 export default function useGame(id?: string) {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
   const queryKey = useMemo(() => `game-${id}`, [id]);
   const {
     data = {} as AxiosResponse,
@@ -22,11 +27,18 @@ export default function useGame(id?: string) {
   });
 
   const createGame = useMutation({
-    mutationFn: ({ gameId }: { gameId: string }) =>
-      fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/game/${gameId}`, {
-        body: JSON.stringify({}),
-        method: "POST",
-      }),
+    mutationFn: (body) =>
+      axios.post(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/game`, body),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [QueryKeys.GAMES],
+      });
+      toast({
+        title: "Information",
+        description: "Information updated successfully",
+        variant: "default",
+      });
+    },
   });
 
   return {
