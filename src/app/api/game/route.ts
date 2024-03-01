@@ -29,14 +29,14 @@ export async function POST(request: NextRequest) {
   const user = await sessionService.getCurrentSessionUser();
 
   // TODO make a field in invitation that the mail is sent so i can filter and don't send again an email
-  // invitations.forEach(
-  //   async (invitation) =>
-  //     await transporter.sendMail({
-  //       to: invitation,
-  //       subject: "test node_mailer",
-  //       text: "Test invite",
-  //     })
-  // );
+  invitations.forEach(
+    async (invitation) =>
+      await transporter.sendMail({
+        to: invitation,
+        subject: "test node_mailer",
+        text: "Test invite",
+      })
+  );
 
   const game = await gameService.create({
     ...body,
