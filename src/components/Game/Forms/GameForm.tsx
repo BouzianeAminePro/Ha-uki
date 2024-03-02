@@ -8,6 +8,7 @@ import { Game } from "@prisma/client";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -43,6 +44,10 @@ export default function GameForm({
             ...data,
             maxPlayers: data?.maxPlayers
               ? JSON.parse(`${data?.maxPlayers}`)
+              : null,
+            duration: data?.duration ? JSON.parse(`${data?.duration}`) : null,
+            startDate: data?.startDate
+              ? new Date(data.startDate).toISOString()
               : null,
           } as Game;
 
@@ -125,7 +130,11 @@ export default function GameForm({
             <FormItem>
               <FormLabel>Start date</FormLabel>
               <FormControl>
-                <Input placeholder="start date" {...field} type="date" />
+                <Input
+                  placeholder="start date"
+                  {...field}
+                  type="datetime-local"
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -133,13 +142,14 @@ export default function GameForm({
         />
         <FormField
           control={form.control}
-          name="endDate"
+          name="duration"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>End date</FormLabel>
+              <FormLabel>Duration</FormLabel>
               <FormControl>
-                <Input placeholder="end date" {...field} type="date" />
+                <Input placeholder="30" {...field} type="number" />
               </FormControl>
+              <FormDescription>Duration in minutes</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -153,15 +163,15 @@ export default function GameForm({
               <FormControl>
                 <TagInput
                   {...field}
-                  placeholder="Enter a topic"
+                  placeholder="test@test.fr"
                   tags={tags}
-                  className="sm:min-w-[450px]"
                   setTags={(newTags) => {
                     setTags(newTags);
                     setValue("invitations", newTags);
                   }}
                 />
               </FormControl>
+              <FormDescription>Enter valid email(s)</FormDescription>
             </FormItem>
           )}
         />

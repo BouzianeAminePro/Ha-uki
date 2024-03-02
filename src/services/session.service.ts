@@ -1,8 +1,11 @@
 import { getServerSession } from "next-auth";
-import { User } from "@prisma/client";
-import { userService } from ".";
 
-export async function getCurrentSessionUser(): Promise<User | null | false> {
+import { userService } from ".";
+import { UserWithGames } from "./user.service";
+
+export async function getCurrentSessionUser(): Promise<
+  UserWithGames | null | false
+> {
   const session = await getServerSession();
   if (!session) return null;
 

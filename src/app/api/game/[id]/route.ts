@@ -1,4 +1,4 @@
-import { gameService } from "@/services";
+import { gameService, sessionService } from "@/services";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function GET(_, { params: { id } }) {
@@ -23,6 +23,14 @@ export async function GET(_, { params: { id } }) {
 
 export async function PATCH(request: NextRequest, { params: { id } }) {
   try {
+    const user = await sessionService.getCurrentSessionUser();
+    if (!user || user.Game.every((game) => game?.id !== id)) {
+      return NextResponse.json(null, {
+        status: 403,
+        statusText: "You don't have the rights to update this game",
+      });
+    }
+
     const body = await request.json();
     const game = await gameService.updateById(body, id);
     return NextResponse.json(game);

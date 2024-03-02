@@ -27,7 +27,7 @@ model Game {
     name       String?
     public     Boolean?
     startDate  DateTime?
-    endDate    DateTime?
+    duration   Int?
     createdAt  DateTime?    @default(now()) @map("created_at")
     updatedAt  DateTime?    @updatedAt @map("updated_at")
     Invitation Invitation[]

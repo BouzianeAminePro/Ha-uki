@@ -14,6 +14,7 @@ import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { useToast } from "../ui/use-toast";
+import { AxiosError } from "axios";
 
 export default function Provider({
   session,
@@ -34,13 +35,14 @@ export default function Provider({
               mutations: {
                 // which converts to 5 minutes
                 gcTime: 300000,
-                onError() {
+                onError(error) {
                   toast({
                     variant: "destructive",
-                    title: "Error on server call",
-                    description: "Error server side",
+                    title:
+                      (error as AxiosError)?.response?.statusText ??
+                      "Opps! error on server call",
                   });
-                }
+                },
               },
             },
           })

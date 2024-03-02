@@ -10,10 +10,12 @@ export async function GET(request: NextRequest) {
     whereClause = { [key]: JSON.parse(value) };
   });
 
-  const user = await sessionService.getCurrentSessionUser();
+  if (!Object.keys(whereClause).includes("public")) {
+    const user = await sessionService.getCurrentSessionUser();
 
-  if (user) {
-    whereClause = { ...whereClause, userId: user?.id };
+    if (user) {
+      whereClause = { ...whereClause, userId: user?.id };
+    }
   }
 
   const games = await gameService.findAll(whereClause);

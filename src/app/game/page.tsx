@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 import { Game, Invitation } from "@prisma/client";
 import { PlusIcon } from "@radix-ui/react-icons";
@@ -14,6 +15,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import GameCard from "@/components/Game/GameCard/GameCard";
 import useGames from "@/hooks/useGames";
 import { Button } from "@/components/ui/button";
@@ -21,23 +23,10 @@ import GameForm from "@/components/Game/Forms/GameForm";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Page() {
-  const { data: games, isPending } = useGames();
+  const { data: games, isPending, setParams } = useGames();
   const { push } = useRouter();
 
-  if (isPending) {
-    return (
-      <div className="flex flex-col space-y-3" suppressHydrationWarning={true}>
-        <div className="space-y-2">
-          <Skeleton className="h-4 w-[250px]" />
-          <Skeleton className="h-4 w-[200px]" />
-        </div>
-        <Skeleton className="h-[125px] w-[250px] rounded-xl" />
-        <Skeleton className="h-[125px] w-[250px] rounded-xl" />
-        <Skeleton className="h-[125px] w-[250px] rounded-xl" />
-        <Skeleton className="h-[125px] w-[250px] rounded-xl" />
-      </div>
-    );
-  }
+  const [currentTab, setCurrentTab] = useState("My games");
 
   return (
     <div className={cn("flex flex-col gap-y-2")}>
@@ -48,7 +37,7 @@ export default function Page() {
               <PlusIcon />
             </Button>
           </SheetTrigger>
-          <SheetContent side="bottom">
+          <SheetContent side="right">
             <SheetHeader>
               <SheetTitle>Game information</SheetTitle>
               <GameForm>
@@ -60,28 +49,69 @@ export default function Page() {
           </SheetContent>
         </Sheet>
       </div>
-      <div className={cn("flex flex-col gap-y-2 w-[300px]")}>
-        {games?.data?.records?.map(
-          (game: Game & { Invitation: Invitation[] }, index: number) => (
-            <div
-              onClick={() => push(`/game/${game.id}`)}
-              className={cn("cursor-pointer")}
-              key={index}
-            >
-              <GameCard
-                active={Boolean(game.active)}
-                acceptedInvitations={
-                  game?.Invitation?.filter(
-                    (invitation: Invitation) => invitation.answer
-                  ).length ?? 0
-                }
-                maxPlayers={Number(game.maxPlayers)}
-                name={String(game.name ?? "Game")}
-              />
-            </div>
-          )
-        )}
-      </div>
+      <Tabs defaultValue={currentTab} className="w-[300px]">
+        <TabsList>
+          <TabsTrigger
+            value="My games"
+            onClick={() => {
+              setCurrentTab("My games");
+              setParams({});
+            }}
+          >
+            My games
+          </TabsTrigger>
+          <TabsTrigger
+            value="public"
+            onClick={() => {
+              setCurrentTab("public");
+              setParams({ public: true });
+            }}
+          >
+            Public
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent value={currentTab}>
+          <div className={cn("flex flex-col gap-y-2 w-[300px]")}>
+            {isPending ? (
+              <div
+                className="flex flex-col space-y-3"
+                suppressHydrationWarning={true}
+              >
+                <Skeleton className="h-[125px] w-[250px] rounded-xl" />
+                <Skeleton className="h-[125px] w-[250px] rounded-xl" />
+                <Skeleton className="h-[125px] w-[250px] rounded-xl" />
+                <Skeleton className="h-[125px] w-[250px] rounded-xl" />
+              </div>
+            ) : (
+              <>
+                {games?.data?.records?.map(
+                  (
+                    game: Game & { Invitation: Invitation[] },
+                    index: number
+                  ) => (
+                    <div
+                      onClick={() => push(`/game/${game.id}`)}
+                      className={cn("cursor-pointer")}
+                      key={index}
+                    >
+                      <GameCard
+                        active={Boolean(game.active)}
+                        acceptedInvitations={
+                          game?.Invitation?.filter(
+                            (invitation: Invitation) => invitation.answer
+                          ).length ?? 0
+                        }
+                        maxPlayers={Number(game.maxPlayers)}
+                        name={String(game.name ?? "Game")}
+                      />
+                    </div>
+                  )
+                )}
+              </>
+            )}
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

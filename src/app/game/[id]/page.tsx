@@ -11,6 +11,8 @@ import { UserInvitation } from "@/types";
 import useGame from "@/hooks/useGame";
 import { useMemo } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { PlusIcon } from "@radix-ui/react-icons";
 
 export default function Game({ params: { id } }: { params: { id: string } }) {
   const { data, isPending } = useGame(id);
@@ -58,9 +60,9 @@ export default function Game({ params: { id } }: { params: { id: string } }) {
         />
       </div>
       {/* TODO add sheet to invite a user by his mail */}
-      {/* <Button size="icon" className={cn("ml-auto md:m-0")}>
+      <Button size="icon" className={cn("ml-auto md:m-0")}>
         <PlusIcon />
-      </Button> */}
+      </Button>
       <Squad users={users ?? []} />
     </div>
   );

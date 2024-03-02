@@ -11,19 +11,33 @@ export async function findUserByEmail(email?: string | null) {
     where: {
       email,
     },
+    include: {
+      Game: {
+        where: {
+          createdBy: {
+            email,
+          },
+        },
+        select: {
+          id: true,
+        },
+      },
+    },
   });
 }
 
-export async function create(user?: User | null) {
-    const userExists = await findUserByEmail(user?.email);
-    if (userExists) {
-      return Promise.reject("User with this email already exists");
-    }
+export type UserWithGames = ReturnType<typeof findUserByEmail>;
 
-    return await prismaClient.user.create({
-      data: {
-        email: user?.email,
-        image: user?.image,
-      },
-    });
+export async function create(user?: User | null) {
+  const userExists = await findUserByEmail(user?.email);
+  if (userExists) {
+    return Promise.reject("User with this email already exists");
+  }
+
+  return await prismaClient.user.create({
+    data: {
+      email: user?.email,
+      image: user?.image,
+    },
+  });
 }
