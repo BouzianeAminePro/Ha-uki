@@ -1,9 +1,9 @@
 import { useState } from "react";
 
-import { QueryKeys } from "@/consts";
 import { useQuery } from "@tanstack/react-query";
 
 import axios, { AxiosError, AxiosResponse } from "axios";
+import { QueryKeys } from "@/consts/types";
 
 export default function useGames() {
   const [params, setParams] = useState({});

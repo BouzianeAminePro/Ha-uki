@@ -14,9 +14,22 @@ export async function findUserByEmail(email?: string | null) {
     include: {
       Game: {
         where: {
-          createdBy: {
-            email,
-          },
+          OR: [
+            {
+              createdBy: {
+                email,
+              },
+            },
+            {
+              Invitation: {
+                some: {
+                  user: {
+                    email,
+                  },
+                },
+              },
+            },
+          ],
         },
         select: {
           id: true,

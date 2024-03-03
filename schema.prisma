@@ -37,6 +37,7 @@ model Game {
 model Invitation {
     id        String     @id @default(cuid())
     answer    Boolean?
+    emailSent Boolean?
     gameId    String?
     userId    String?
     benchType BenchType?

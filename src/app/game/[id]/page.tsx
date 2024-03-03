@@ -1,18 +1,19 @@
 "use client";
 
-import type { Game, Invitation } from "@prisma/client";
-// import { PlusIcon } from "@radix-ui/react-icons";
-
-import GameCard from "@/components/Game/GameCard/GameCard";
-import { cn } from "@/lib";
-// import { Button } from "@/components/ui/button";
-import Squad from "@/components/Squad/Squad";
-import { UserInvitation } from "@/types";
-import useGame from "@/hooks/useGame";
+import dynamic from "next/dynamic";
 import { useMemo } from "react";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Button } from "@/components/ui/button";
+
+import type { Game, Invitation } from "@prisma/client";
 import { PlusIcon } from "@radix-ui/react-icons";
+
+import { cn } from "@/lib";
+const GameCard = dynamic(() => import("@/components/Game/GameCard/GameCard"));
+const Squad = dynamic(() => import("@/components/Squad/Squad"));
+const Skeleton = dynamic(() => import("@/components/ui/skeleton"));
+import useGame from "@/hooks/useGame";
+import { UserInvitation } from "@/types";
+import { Button } from "@/components/ui/button";
+
 
 export default function Game({ params: { id } }: { params: { id: string } }) {
   const { data, isPending } = useGame(id);

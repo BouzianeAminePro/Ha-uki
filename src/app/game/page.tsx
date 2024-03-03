@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
 import { useState } from "react";
 
 import { Game, Invitation } from "@prisma/client";
@@ -16,11 +17,11 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import GameCard from "@/components/Game/GameCard/GameCard";
 import useGames from "@/hooks/useGames";
 import { Button } from "@/components/ui/button";
-import GameForm from "@/components/Game/Forms/GameForm";
-import { Skeleton } from "@/components/ui/skeleton";
+const GameForm = dynamic(() => import("@/components/Game/Forms/GameForm"));
+const GameCard = dynamic(() => import("@/components/Game/GameCard/GameCard"));
+const Skeleton = dynamic(() => import("@/components/ui/skeleton"));
 
 export default function Page() {
   const { data: games, isPending, setParams } = useGames();

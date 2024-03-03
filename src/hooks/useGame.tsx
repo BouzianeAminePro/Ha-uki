@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
-import { QueryKeys } from "@/consts";
+import { QueryKeys } from "@/consts/types";
 
 export default function useGame(id?: string) {
   const queryClient = useQueryClient();
