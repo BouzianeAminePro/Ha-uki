@@ -1,6 +1,10 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-import { gameService, sessionService, transporter } from "@/services";
+import { sendMail } from "@/services/mailer.service";
+import { getCurrentSessionUser } from "@/services/session.service";
+import { create, findAll } from "@/services/game.service";
+import * as invitationService from "@/services/invitation.service";
+import { findUserByEmail } from "@/services/user.service";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -11,39 +15,44 @@ export async function GET(request: NextRequest) {
   });
 
   if (!Object.keys(whereClause).includes("public")) {
-    const user = await sessionService.getCurrentSessionUser();
+    const user = await getCurrentSessionUser();
 
     if (user) {
       whereClause = { ...whereClause, userId: user?.id };
     }
   }
 
-  const games = await gameService.findAll(whereClause);
+  const games = await findAll(whereClause);
 
   return NextResponse.json({ records: games, count: games.length });
 }
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
-  const { invitations = [] } = body;
-  delete body.invitations;
+  const { invitations = [], ...gameData } = body;
 
-  const user = await sessionService.getCurrentSessionUser();
+  const user = await getCurrentSessionUser();
 
-  // TODO make a field in invitation that the mail is sent so i can filter and don't send again an email
-  invitations.forEach(
-    async (invitation) =>
-      await transporter.sendMail({
-        to: invitation,
-        subject: "test node_mailer",
-        text: "Test invite",
-      })
-  );
-
-  const game = await gameService.create({
-    ...body,
+  const game = await create({
+    ...gameData,
     userId: user ? user?.id : null,
   });
+
+  if (user) {
+    await Promise.all(
+      invitations.map(async (email: string) => {
+        await sendMail(email, "test node_mailer", "Test invite");
+        const userByEmail = await findUserByEmail(email);
+        if (userByEmail) {
+          await invitationService.create({
+            emailSent: true,
+            userId: userByEmail?.id,
+            gameId: game?.id,
+          });
+        }
+      })
+    );
+  }
 
   return NextResponse.json(game);
 }

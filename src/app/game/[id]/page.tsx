@@ -10,10 +10,21 @@ import { cn } from "@/lib";
 const GameCard = dynamic(() => import("@/components/Game/GameCard/GameCard"));
 const Squad = dynamic(() => import("@/components/Squad/Squad"));
 const Skeleton = dynamic(() => import("@/components/ui/skeleton"));
+const InvitationForm = dynamic(
+  () => import("@/components/Invitation/Forms/InvitationForm")
+);
+
 import useGame from "@/hooks/useGame";
 import { UserInvitation } from "@/types";
 import { Button } from "@/components/ui/button";
-
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 export default function Game({ params: { id } }: { params: { id: string } }) {
   const { data, isPending } = useGame(id);
@@ -60,10 +71,25 @@ export default function Game({ params: { id } }: { params: { id: string } }) {
           name={String(game?.name ?? "Game")}
         />
       </div>
-      {/* TODO add sheet to invite a user by his mail */}
-      <Button size="icon" className={cn("ml-auto md:m-0")}>
-        <PlusIcon />
-      </Button>
+      <div className={cn("ml-auto")}>
+        <Sheet>
+          <SheetTrigger>
+            <Button size="icon">
+              <PlusIcon />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="right">
+            <SheetHeader>
+              <SheetTitle>Invitations:</SheetTitle>
+            </SheetHeader>
+            <InvitationForm gameId={id}>
+              <SheetClose>
+                <Button type="submit">Confirm</Button>
+              </SheetClose>
+            </InvitationForm>
+          </SheetContent>
+        </Sheet>
+      </div>
       <Squad users={users ?? []} />
     </div>
   );

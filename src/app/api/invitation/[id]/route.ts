@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { PrismaClientInstance } from "@/lib";
-import { sessionService } from "@/services";
+import { getCurrentSessionUser } from "@/services/session.service";
 
 export async function GET() {}
 
@@ -25,7 +25,7 @@ export async function PATCH(request: NextRequest, { params: { id } }) {
     });
   }
 
-  const user = await sessionService.getCurrentSessionUser();
+  const user = await getCurrentSessionUser();
   if (!user || user.Game.every((game) => game?.id !== invitation?.gameId)) {
     return NextResponse.json(null, {
       status: 403,

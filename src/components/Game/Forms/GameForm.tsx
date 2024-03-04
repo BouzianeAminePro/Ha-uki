@@ -51,7 +51,7 @@ export default function GameForm({
               : null,
           } as Game;
 
-          await createGame.mutateAsync(body);
+          await createGame.mutateAsync(body as any);
         })}
         className="space-y-8"
       >
@@ -167,7 +167,7 @@ export default function GameForm({
                   tags={tags}
                   setTags={(newTags) => {
                     setTags(newTags);
-                    setValue("invitations", newTags);
+                    setValue("invitations", newTags as any);
                   }}
                 />
               </FormControl>

@@ -10,6 +10,7 @@ import {
   AvatarIcon,
   EnterIcon,
   ExitIcon,
+  GearIcon,
   HomeIcon,
 } from "@radix-ui/react-icons";
 import { signIn, signOut, useSession } from "next-auth/react";
@@ -30,6 +31,10 @@ export default function MenuBar() {
   const pathname = usePathname();
 
   const isShowCasePage = useMemo(() => pathname === "/", [pathname]);
+  const isProfilePage = useMemo(
+    () => pathname.includes("/profile"),
+    [pathname]
+  );
 
   const { status, data: session } = useSession();
 
@@ -84,6 +89,13 @@ export default function MenuBar() {
                     ) : (
                       <></>
                     )}
+                    <DropdownMenuItem
+                      onClick={() =>
+                        push(isProfilePage ? "/game" : "/profile/information")
+                      }
+                    >
+                      {isProfilePage ? <HomeIcon /> : <GearIcon />}
+                    </DropdownMenuItem>
                     <DropdownMenuItem
                       onClick={() => signOut({ callbackUrl: "/" })}
                     >

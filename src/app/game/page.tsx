@@ -41,12 +41,12 @@ export default function Page() {
           <SheetContent side="right">
             <SheetHeader>
               <SheetTitle>Game information</SheetTitle>
-              <GameForm>
-                <SheetClose>
-                  <Button type="submit">Confirm</Button>
-                </SheetClose>
-              </GameForm>
             </SheetHeader>
+            <GameForm>
+              <SheetClose>
+                <Button type="submit">Confirm</Button>
+              </SheetClose>
+            </GameForm>
           </SheetContent>
         </Sheet>
       </div>
@@ -96,7 +96,7 @@ export default function Page() {
                       key={index}
                     >
                       <GameCard
-                        active={Boolean(game.active)}
+                        active={game.active}
                         acceptedInvitations={
                           game?.Invitation?.filter(
                             (invitation: Invitation) => invitation.answer

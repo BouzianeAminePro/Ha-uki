@@ -1,12 +1,14 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Invitation } from "@prisma/client";
 import { useToast } from "@/components/ui/use-toast";
 
 export function useInvitation(id?: string) {
+  const [params, setParams] = useState<any>({});
+
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
@@ -56,11 +58,33 @@ export function useInvitation(id?: string) {
     },
   });
 
+  const createInvitation = useMutation({
+    mutationFn: async ({ data }: { data: any }) =>
+      await axios.post(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/invitation`,
+        data,
+        { params }
+      ),
+    onSuccess() {
+      toast({
+        title: "Information",
+        description: "Information updated successfully",
+        variant: "default",
+      });
+      queryClient.invalidateQueries({
+        queryKey: [`game-${params.gameId}`],
+      });
+    },
+  });
+
   return {
     data,
     isPending,
     error,
     status,
     updateInvitation,
+    createInvitation,
+    params,
+    setParams,
   };
 }

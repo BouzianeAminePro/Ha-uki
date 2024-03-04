@@ -1,4 +1,5 @@
-import { gameService, sessionService } from "@/services";
+import { findById, updateById } from "@/services/game.service";
+import { getCurrentSessionUser } from "@/services/session.service";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function GET(_, { params: { id } }) {
@@ -9,7 +10,7 @@ export async function GET(_, { params: { id } }) {
     });
   }
 
-  const game = await gameService.findById(id);
+  const game = await findById(id);
 
   if (!game) {
     return NextResponse.json(null, {
@@ -23,7 +24,7 @@ export async function GET(_, { params: { id } }) {
 
 export async function PATCH(request: NextRequest, { params: { id } }) {
   try {
-    const user = await sessionService.getCurrentSessionUser();
+    const user = await getCurrentSessionUser();
     if (!user || user.Game.every((game) => game?.id !== id)) {
       return NextResponse.json(null, {
         status: 403,
@@ -32,7 +33,7 @@ export async function PATCH(request: NextRequest, { params: { id } }) {
     }
 
     const body = await request.json();
-    const game = await gameService.updateById(body, id);
+    const game = await updateById(body, id);
     return NextResponse.json(game);
   } catch (e) {
     return NextResponse.json(null, {

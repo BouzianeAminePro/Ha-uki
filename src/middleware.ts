@@ -17,14 +17,7 @@ export async function middleware(request: NextRequest & { user: any }) {
       return NextResponse.redirect(new URL("/api/auth/signin", request.url));
     }
 
-    // if (gamePathIdRegex.test(request.nextUrl.pathname)) {
-    //   const [id, ..._] = request.nextUrl.pathname.split("/").reverse();
-    //   console.log(token?.user?.Game);
-    //   console.log(id);
-    //   if (token?.user?.Game?.every((game) => id !== game?.id)) {
-    //     return NextResponse.redirect(new URL("/game", request.url));
-    //   }
-    // }
+    // TODO if you're neither the creator of the game or neither invited to it you can't access to it
   }
 
   return NextResponse.next();

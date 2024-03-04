@@ -1,6 +1,6 @@
 import { createTransport } from "nodemailer";
 
-export const transporter = createTransport({
+const transporter = createTransport({
   service: "Gmail",
   host: "smtp.gmail.com",
   port: 465,
@@ -11,4 +11,28 @@ export const transporter = createTransport({
   },
 });
 
+export function sendMail(
+  to?: string | null,
+  subject?: string,
+  text?: string,
+  isHtml = false
+) {
 
+  if(!to) {
+    return;
+  }
+
+  const msg = isHtml
+    ? {
+        html: text,
+      }
+    : {
+        text,
+      };
+
+  return transporter.sendMail({
+    to,
+    subject,
+    ...msg,
+  });
+}

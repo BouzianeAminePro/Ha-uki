@@ -4,12 +4,12 @@
     [x] Make tabs for my games and public games
     [x] Public games as a card with a send request to join the game (to the createdBy)
     [] add filter (active, public, ...)
+    [] Make invitation line and make field emailSent to true in the emailSent field so i can filter and don't send again an email
+    [] if the user don't exist send a different meial with a link to the api to create to ask hi mto connect with the redirect to the api to automatically create the invitation line
 
 ## In the game/:id page
 
-    [] Add restriction on page, case if you're neither the creator or in the invitation list
-        [] no access
-        [x] no update
+    [x] Add restriction on page, case if you're neither the creator or in the invitation list
     [] Add the fact a user can accept or not the invitation in the game page
         [] if he accepts create the invitationb line on db
         [] for that the mail must have the game id too
@@ -17,7 +17,7 @@
 ## Email reqs:
 
     [] Send invitation mail case the user already exists
-    [] Before sending invitation email add a field in invitation to prevent multiple invitations (emailSent)
+    [x] Before sending invitation email add a field in invitation to prevent multiple invitations (emailSent)
     [] Case an invitation for non existing user, send en email with url prams to redirect to the game and ask him to join the platform
     [] See how i can handle the case is a new user and handle the emailSent field
 
