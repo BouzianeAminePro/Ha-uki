@@ -1,8 +1,8 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
-import { useState } from "react";
+import Link from "next/link";
+import { useCallback, useState } from "react";
 
 import { Game, Invitation } from "@prisma/client";
 import { PlusIcon } from "@radix-ui/react-icons";
@@ -24,10 +24,14 @@ const GameCard = dynamic(() => import("@/components/Game/GameCard/GameCard"));
 const Skeleton = dynamic(() => import("@/components/ui/skeleton"));
 
 export default function Page() {
-  const { data: games, isPending, setParams } = useGames();
-  const { push } = useRouter();
-
   const [currentTab, setCurrentTab] = useState("My games");
+
+  const onTabChange = useCallback((tabName: string, params = {}) => {
+    setCurrentTab(tabName);
+    setParams(params);
+  }, []);
+
+  const { data: games, isPending, setParams } = useGames();
 
   return (
     <div className={cn("flex flex-col gap-y-2")}>
@@ -52,21 +56,12 @@ export default function Page() {
       </div>
       <Tabs defaultValue={currentTab} className="w-[300px]">
         <TabsList>
-          <TabsTrigger
-            value="My games"
-            onClick={() => {
-              setCurrentTab("My games");
-              setParams({});
-            }}
-          >
+          <TabsTrigger value="My games" onClick={() => onTabChange("My games")}>
             My games
           </TabsTrigger>
           <TabsTrigger
             value="public"
-            onClick={() => {
-              setCurrentTab("public");
-              setParams({ public: true });
-            }}
+            onClick={() => onTabChange("public", { public: true })}
           >
             Public
           </TabsTrigger>
@@ -74,10 +69,7 @@ export default function Page() {
         <TabsContent value={currentTab}>
           <div className={cn("flex flex-col gap-y-2 w-[300px]")}>
             {isPending ? (
-              <div
-                className="flex flex-col space-y-3"
-                suppressHydrationWarning={true}
-              >
+              <div className="flex flex-col space-y-3">
                 <Skeleton className="h-[125px] w-[250px] rounded-xl" />
                 <Skeleton className="h-[125px] w-[250px] rounded-xl" />
                 <Skeleton className="h-[125px] w-[250px] rounded-xl" />
@@ -90,11 +82,7 @@ export default function Page() {
                     game: Game & { Invitation: Invitation[] },
                     index: number
                   ) => (
-                    <div
-                      onClick={() => push(`/game/${game.id}`)}
-                      className={cn("cursor-pointer")}
-                      key={index}
-                    >
+                    <Link href={`/game/${game.id}`} key={index}>
                       <GameCard
                         {...game}
                         active={game.active}
@@ -106,7 +94,7 @@ export default function Page() {
                         maxPlayers={Number(game.maxPlayers)}
                         name={String(game.name ?? "Game")}
                       />
-                    </div>
+                    </Link>
                   )
                 )}
               </>

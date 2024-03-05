@@ -26,7 +26,7 @@ export default function Squad({ users }) {
   return (
     <div className={cn("flex flex-col md:flex-row md:gap-x-5 gap-y-5")}>
       <RosterRegistry roster={officialSquad} type={BenchType.OFFICIAL} />
-      <RosterRegistry roster={squad} />
+      <RosterRegistry roster={squad} title="Squad list" />
       <RosterRegistry roster={reserveSquad} type={BenchType.RESERVE} />
     </div>
   );

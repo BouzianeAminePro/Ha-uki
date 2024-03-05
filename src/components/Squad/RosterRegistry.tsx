@@ -11,9 +11,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 
 export default function RosterRegistry({
   roster,
+  title,
   type = null,
 }: {
   roster;
+  title?: string;
   type?: BenchType | null;
 }) {
   const { updateInvitation } = useInvitation();
@@ -39,7 +41,7 @@ export default function RosterRegistry({
     <div className={cn("md:w-[300px]")} ref={drop}>
       <Card>
         <CardHeader>
-          <CardTitle>{type ?? "MAIN"} squad</CardTitle>
+          <CardTitle>{title ?? `${type} squad`}</CardTitle>
         </CardHeader>
         <CardContent className={cn("flex flex-col gap-y-3 w-full h-full")}>
           {roster?.map(
