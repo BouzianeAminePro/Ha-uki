@@ -13,6 +13,7 @@
     [] Add the fact a user can accept or not the invitation in the game page
         [] if he accepts create the invitationb line on db
         [] for that the mail must have the game id too
+    [] Handle case already existing user
 
 ## Email reqs:
 
@@ -24,6 +25,14 @@
 # Game form
 
     [x] Remove start and end date, spzecify only the start date / hour, and the duration.
+
+# Game Card
+
+    [] show more information like start date duration
+
+# Squad
+
+    [] case answer no for a invitation, make a line on the name/email/picture
 
 # Performance
 

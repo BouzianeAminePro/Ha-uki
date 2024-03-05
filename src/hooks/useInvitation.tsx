@@ -41,21 +41,13 @@ export function useInvitation(id?: string) {
           `${process.env.NEXT_PUBLIC_SERVER_URL}/api/invitation/${invitationId}`,
           data
         )
-        .then((response) =>
-          queryClient.invalidateQueries({
-            queryKey: [`game-${response?.data?.gameId}`],
-          })
-        ),
-    onSuccess: () => {
+        .then((response) => {
+          return response;
+        }),
+    onSuccess: (response) =>
       queryClient.invalidateQueries({
-        queryKey: [queryKey],
-      });
-      toast({
-        title: "Information",
-        description: "Information updated successfully",
-        variant: "default",
-      });
-    },
+        queryKey: [`game-${response?.data?.gameId}`],
+      }),
   });
 
   const createInvitation = useMutation({

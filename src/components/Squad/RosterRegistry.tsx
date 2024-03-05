@@ -2,17 +2,12 @@
 
 import { useDrop } from "react-dnd";
 
-import { BenchType } from "@prisma/client";
+import { BenchType, Invitation } from "@prisma/client";
 
 import Player from "./Player";
 import { useInvitation } from "@/hooks/useInvitation";
 import { cn } from "@/lib";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "../ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 
 export default function RosterRegistry({
   roster,
@@ -29,16 +24,15 @@ export default function RosterRegistry({
         isOver: !!monitor.isOver(),
         canDrop: !!monitor.canDrop(),
       }),
-      drop: async (player: any) => {
+      drop: async (player: any) =>
         await updateInvitation.mutateAsync({
           invitationId: player.invitationId,
           data: {
-            benchType: type
-          },
-        });
-      },
+            benchType: type,
+          } as Invitation,
+        }),
     }),
-    []
+    [type]
   );
 
   return (

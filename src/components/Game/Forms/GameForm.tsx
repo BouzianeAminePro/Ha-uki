@@ -17,8 +17,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib";
-import useGame from "@/hooks/useGame";
 import { TagInput } from "@/components/ui/tag-input";
+import useGames from "@/hooks/useGames";
 
 export default function GameForm({
   game,
@@ -27,7 +27,7 @@ export default function GameForm({
   game?: Game;
   children: ReactNode;
 }) {
-  const { createGame } = useGame();
+  const { createGame } = useGames();
   const [tags, setTags] = useState<string[]>([]);
 
   const form = useForm({
@@ -132,7 +132,7 @@ export default function GameForm({
               <FormControl>
                 <Input
                   placeholder="start date"
-                  {...field}
+                  {...(field as any)}
                   type="datetime-local"
                 />
               </FormControl>
@@ -147,7 +147,7 @@ export default function GameForm({
             <FormItem>
               <FormLabel>Duration</FormLabel>
               <FormControl>
-                <Input placeholder="30" {...field} type="number" />
+                <Input placeholder="30" {...(field as any)} type="number" />
               </FormControl>
               <FormDescription>Duration in minutes</FormDescription>
               <FormMessage />
