@@ -96,6 +96,7 @@ export default function Page() {
                       key={index}
                     >
                       <GameCard
+                        {...game}
                         active={game.active}
                         acceptedInvitations={
                           game?.Invitation?.filter(

@@ -61,6 +61,7 @@ export default function Game({ params: { id } }: { params: { id: string } }) {
     <div className={cn("flex flex-col gap-y-5 w-full px-5 md:w-fit")}>
       <div className={cn("md:w-[300px] md:self-center")}>
         <GameCard
+          {...game}
           active={game?.active}
           acceptedInvitations={
             game?.Invitation?.filter(
