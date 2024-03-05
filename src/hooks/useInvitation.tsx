@@ -36,14 +36,10 @@ export function useInvitation(id?: string) {
       invitationId: string;
       data: Invitation;
     }) =>
-      await axios
-        .patch(
-          `${process.env.NEXT_PUBLIC_SERVER_URL}/api/invitation/${invitationId}`,
-          data
-        )
-        .then((response) => {
-          return response;
-        }),
+      await axios.patch(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/invitation/${invitationId}`,
+        data
+      ),
     onSuccess: (response) =>
       queryClient.invalidateQueries({
         queryKey: [`game-${response?.data?.gameId}`],
@@ -58,13 +54,13 @@ export function useInvitation(id?: string) {
         { params }
       ),
     onSuccess() {
+      queryClient.invalidateQueries({
+        queryKey: [`game-${params.gameId}`],
+      });
       toast({
         title: "Information",
         description: "Information updated successfully",
         variant: "default",
-      });
-      queryClient.invalidateQueries({
-        queryKey: [`game-${params.gameId}`],
       });
     },
   });

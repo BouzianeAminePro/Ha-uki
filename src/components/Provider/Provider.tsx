@@ -4,17 +4,18 @@ import { ReactNode } from "react";
 
 import { Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
+import { AxiosError } from "axios";
 import {
   MutationCache,
   QueryCache,
   QueryClient,
   QueryClientProvider,
 } from "@tanstack/react-query";
-import { ThemeProvider as NextThemesProvider } from "next-themes";
+import { ThemeProvider } from "next-themes";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
+
 import { useToast } from "../ui/use-toast";
-import { AxiosError } from "axios";
 
 export default function Provider({
   session,
@@ -48,14 +49,14 @@ export default function Provider({
           })
         }
       >
-        <NextThemesProvider
+        <ThemeProvider
           attribute="class"
           defaultTheme="dark"
           enableSystem
           disableTransitionOnChange
         >
           <DndProvider backend={HTML5Backend}>{children}</DndProvider>
-        </NextThemesProvider>
+        </ThemeProvider>
       </QueryClientProvider>
     </SessionProvider>
   );
