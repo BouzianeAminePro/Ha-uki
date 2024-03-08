@@ -2,9 +2,11 @@
 
 import { useMemo } from "react";
 import axios, { AxiosError, AxiosResponse } from "axios";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { QueryKeys } from "@/consts/types";
 
 export default function useGame(id?: string) {
+  const queryClient = useQueryClient();
 
   const queryKey = useMemo(() => `game-${id}`, [id]);
   const {
@@ -25,6 +27,11 @@ export default function useGame(id?: string) {
       await axios.delete(
         `${process.env.NEXT_PUBLIC_SERVER_URL}/api/game/${id}`
       ),
+    onSuccess() {
+      queryClient.invalidateQueries({
+        queryKey: [QueryKeys.GAMES],
+      });
+    },
   });
 
   return {
@@ -32,6 +39,6 @@ export default function useGame(id?: string) {
     isPending,
     error,
     status,
-    deleteGame
+    deleteGame,
   };
 }
