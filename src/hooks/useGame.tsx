@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import axios, { AxiosError, AxiosResponse } from "axios";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 export default function useGame(id?: string) {
 
@@ -20,10 +20,18 @@ export default function useGame(id?: string) {
       ),
   });
 
+  const deleteGame = useMutation({
+    mutationFn: async () =>
+      await axios.delete(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/game/${id}`
+      ),
+  });
+
   return {
     data,
     isPending,
     error,
     status,
+    deleteGame
   };
 }

@@ -83,7 +83,7 @@ export default function MenuBar() {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="min-w-[20px]">
                     {isShowCasePage ? (
-                      <DropdownMenuItem onClick={() => push("/game")}>
+                      <DropdownMenuItem onClick={() => push("/game")} className={cn('cursor-pointer')}>
                         <HomeIcon />
                       </DropdownMenuItem>
                     ) : (
@@ -93,11 +93,13 @@ export default function MenuBar() {
                       onClick={() =>
                         push(isProfilePage ? "/game" : "/profile/information")
                       }
+                      className={cn('cursor-pointer')}
                     >
                       {isProfilePage ? <HomeIcon /> : <GearIcon />}
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       onClick={() => signOut({ callbackUrl: "/" })}
+                      className={cn('cursor-pointer')}
                     >
                       <ExitIcon />
                     </DropdownMenuItem>
