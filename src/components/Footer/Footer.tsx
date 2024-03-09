@@ -9,7 +9,7 @@ export default function Footer() {
   return (
     <div
       className={cn(
-        "fixed bottom-0 flex items-center justify-around dark:bg-zinc-900 w-full h-[5rem]"
+        "fixed bottom-0 flex items-center justify-around w-full h-[5rem]"
       )}
     >
       <h4 className={cn("scroll-m-20 text-sm font-semibold tracking-tight")}>
