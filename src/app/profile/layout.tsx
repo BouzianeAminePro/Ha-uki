@@ -13,13 +13,9 @@ import { Separator } from "@/components/ui/separator";
 
 export default function Layout({ children }: { children: ReactNode }) {
   return (
-    <div
-      className={cn(
-        "h-full w-full flex md:flex-row flex-col md:items-center justify-around gap-y-5 md:p-2 p-5"
-      )}
-    >
-      <div className="flex flex-col md:flex-row gap-9">
-        <NavigationMenu className="items-start">
+    <div className="flex flex-col justify-evenly md:flex-row">
+      <div className="flex flex-col md:flex-row p-5 md:gap-x-9 md:items-center">
+        <NavigationMenu>
           <NavigationMenuList className="flex md:flex-col items-baseline gap-3">
             <div className="text-lg font-bold" style={{ marginBottom: 5 }}>
               Menu
@@ -42,8 +38,10 @@ export default function Layout({ children }: { children: ReactNode }) {
             </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
+        <div>{children}</div>
       </div>
-      <div className="justify-self-start">{children}</div>
+      {/* to space evenly */}
+      <div></div>
     </div>
   );
 }

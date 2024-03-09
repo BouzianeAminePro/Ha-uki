@@ -42,7 +42,7 @@ export default function Page() {
               <PlusIcon />
             </Button>
           </SheetTrigger>
-          <SheetContent side="right">
+          <SheetContent side="right" className={cn("overflow-y-auto")}>
             <SheetHeader>
               <SheetTitle>Game information</SheetTitle>
             </SheetHeader>
