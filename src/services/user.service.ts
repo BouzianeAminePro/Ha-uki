@@ -41,7 +41,7 @@ export async function findUserByEmail(email?: string | null) {
 
 export type UserWithGames = ReturnType<typeof findUserByEmail>;
 
-export async function create(user?: User | null) {
+export async function create(user?: Partial<User> | null) {
   const userExists = await findUserByEmail(user?.email);
   if (userExists) {
     return Promise.reject("User with this email already exists");

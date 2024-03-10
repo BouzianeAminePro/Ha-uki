@@ -46,3 +46,14 @@ export async function create(invitationData: Partial<Invitation>) {
     data: invitationData,
   });
 }
+
+export async function findByUserId(userId: string, gameId?: string) {
+  if(!userId) return false;
+
+  return await prismaClient.invitation.findFirst({
+    where: {
+      userId,
+      gameId
+    }
+  });
+}

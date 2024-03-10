@@ -171,7 +171,9 @@ export default function GameForm({
                   }}
                 />
               </FormControl>
-              <FormDescription>Enter valid email(s)</FormDescription>
+              <FormDescription>
+                Enter valid email(s) (only gmail for now)
+              </FormDescription>
             </FormItem>
           )}
         />

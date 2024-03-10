@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 
-const PROTECTED_ROUTES = ["/game"];
+const PROTECTED_ROUTES = ["/game", "/profile", "/join"];
 // const gamePathIdRegex = /^\/game\/\w+/;
 
 export async function middleware(request: NextRequest & { user: any }) {

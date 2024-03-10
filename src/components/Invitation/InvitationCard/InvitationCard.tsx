@@ -35,7 +35,7 @@ export default function InvitationCard({
     <div className={cn("flex flex-row items-center md:gap-x-10")}>
       <Collapsible>
         <CollapsibleTrigger
-          className={cn("flex flex-row items-center gap-x-1")}
+          className={cn("flex flex-row items-center gap-x-1 mb-2")}
         >
           <StatusSymbol status={invitation.game.active} />
           <div className={cn("dark:text-muted-foreground")}>

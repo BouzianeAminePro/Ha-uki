@@ -30,17 +30,16 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const emails = (await request.json()) ?? [];
-  const gameId = searchParams.get("gameId");
+  const gameId = String(searchParams.get("gameId"));
 
   Promise.all(
     emails?.flatMap(async (email: string) => {
       const user = await findUserByEmail(email);
       if (!user) {
-        // TODO send new user the email to join plus the query params for the gameId
-        return sendMail(email, "Invitation", content, true);
+        return sendMail(email, "Join us", content(gameId, email), true);
       } else {
         return [
-          sendMail(user?.email, "invitation", "Invite text"),
+          sendMail(user?.email, "invitation", content(gameId, email), true),
           create({
             emailSent: true,
             userId: user?.id,
