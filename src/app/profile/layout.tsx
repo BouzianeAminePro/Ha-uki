@@ -13,9 +13,9 @@ import { Separator } from "@/components/ui/separator";
 
 export default function Layout({ children }: { children: ReactNode }) {
   return (
-    <div className="flex flex-col justify-evenly md:flex-row">
+    <div className="flex flex-col justify-evenly w-full md:flex-row">
       <div className="flex flex-col md:flex-row p-5 md:gap-x-9 md:items-center">
-        <NavigationMenu>
+        <NavigationMenu className="flex">
           <NavigationMenuList className="flex md:flex-col items-baseline gap-3">
             <div className="text-lg font-bold" style={{ marginBottom: 5 }}>
               Menu
@@ -26,11 +26,11 @@ export default function Layout({ children }: { children: ReactNode }) {
                 General information
               </Link>
             </NavigationMenuItem>
-            <NavigationMenuItem className="cursor-pointer md:hover:underline underline md:no-underline">
+            {/* <NavigationMenuItem className="cursor-pointer md:hover:underline underline md:no-underline">
               <Link href="/profile/game" legacyBehavior passHref>
                 Games
               </Link>
-            </NavigationMenuItem>
+            </NavigationMenuItem> */}
             <NavigationMenuItem className="cursor-pointer md:hover:underline underline md:no-underline">
               <Link href="/profile/invitation" legacyBehavior passHref>
                 Invitations

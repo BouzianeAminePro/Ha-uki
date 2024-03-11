@@ -2,8 +2,6 @@ import { NextResponse, type NextRequest } from "next/server";
 import { PrismaClientInstance } from "@/lib";
 import { getCurrentSessionUser } from "@/services/session.service";
 
-export async function GET() {}
-
 export async function PATCH(request: NextRequest, { params: { id } }) {
   const body = await request.json();
   const prismaClient = PrismaClientInstance.getInstance();

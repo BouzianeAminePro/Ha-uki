@@ -4,12 +4,7 @@ import { useMemo, useState } from "react";
 import { Game } from "@prisma/client";
 
 import { cn } from "@/lib";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import StatusSymbol from "@/components/StatusSymbol/StatusSymbol";
 import { Badge } from "@/components/ui/badge";
 
@@ -18,12 +13,14 @@ export default function GameCard({
   acceptedInvitations = 0,
   active,
   name = "Game",
+  canRequest = false,
   ...rest
 }: {
   maxPlayers: number;
   acceptedInvitations: number;
   active: boolean | null;
   name: string;
+  canRequest?: boolean;
 }) {
   const [game] = useState<Game>(rest as Game);
 
@@ -34,7 +31,9 @@ export default function GameCard({
   }, [game]);
 
   return (
-    <Card>
+    <Card
+      className={cn(`${canRequest ? "rounded-tr-none rounded-br-none" : ""}`)}
+    >
       <CardHeader>
         <CardTitle className={cn("flex")}>
           <span className={cn("dark:text-muted-foreground")}>{name}</span>

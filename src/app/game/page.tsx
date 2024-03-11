@@ -5,7 +5,9 @@ import Link from "next/link";
 import { useCallback, useState } from "react";
 
 import { Game, Invitation } from "@prisma/client";
-import { PlusIcon } from "@radix-ui/react-icons";
+import { EnvelopeClosedIcon, PlusIcon } from "@radix-ui/react-icons";
+import { useSession } from "next-auth/react";
+import { User } from "next-auth";
 
 import { cn } from "@/lib";
 import {
@@ -19,12 +21,19 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import useGames from "@/hooks/useGames";
 import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 const GameForm = dynamic(() => import("@/components/Game/Forms/GameForm"));
 const GameCard = dynamic(() => import("@/components/Game/GameCard/GameCard"));
 const Skeleton = dynamic(() => import("@/components/ui/skeleton"));
 
 export default function Page() {
   const [currentTab, setCurrentTab] = useState("My games");
+  const { data: session } = useSession();
 
   const onTabChange = useCallback((tabName: string, params = {}) => {
     setCurrentTab(tabName);
@@ -32,6 +41,15 @@ export default function Page() {
   }, []);
 
   const { data: games, isPending, setParams } = useGames();
+
+  const isGameOwnerOrInvited = useCallback(
+    (gameId: string) => {
+      return (session?.user as User & { Game: Game[] })?.Game?.some(
+        (item) => item?.id === gameId
+      );
+    },
+    [session?.user]
+  );
 
   return (
     <div className={cn("flex flex-col gap-y-2")}>
@@ -77,25 +95,56 @@ export default function Page() {
               </div>
             ) : (
               <>
-                {games?.data?.records?.map(
-                  (
-                    game: Game & { Invitation: Invitation[] },
-                    index: number
-                  ) => (
-                    <Link href={`/game/${game.id}`} key={index}>
-                      <GameCard
-                        {...game}
-                        active={game.active}
-                        acceptedInvitations={
-                          game?.Invitation?.filter(
-                            (invitation: Invitation) => invitation.answer
-                          ).length ?? 0
-                        }
-                        maxPlayers={Number(game.maxPlayers)}
-                        name={String(game.name ?? "Game")}
-                      />
-                    </Link>
+                {games?.data?.records.length ? (
+                  games?.data?.records?.map(
+                    (
+                      game: Game & { Invitation: Invitation[] },
+                      index: number
+                    ) => (
+                      <div className={cn("flex flex-row")} key={index}>
+                        <Link href={`/game/${game.id}`}>
+                          <GameCard
+                            {...game}
+                            active={game.active}
+                            acceptedInvitations={
+                              game?.Invitation?.filter(
+                                (invitation: Invitation) => invitation.answer
+                              ).length ?? 0
+                            }
+                            maxPlayers={Number(game.maxPlayers)}
+                            name={String(game.name ?? "Game")}
+                            canRequest={
+                              currentTab === "public" &&
+                              !isGameOwnerOrInvited(game?.id)
+                            }
+                          />
+                        </Link>
+                        {currentTab === "public" &&
+                        !isGameOwnerOrInvited(game?.id) ? (
+                          <div>
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger className="h-full">
+                                  <Button
+                                    onClick={console.log}
+                                    className="flex h-full rounded-tl-none rounded-bl-none"
+                                  >
+                                    {/* if invitation is sent opened the enevlope icon */}
+                                    <EnvelopeClosedIcon />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>Request to join the game</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          </div>
+                        ) : null}
+                      </div>
+                    )
                   )
+                ) : (
+                  <div className={cn("text-lg")}>No games to show</div>
                 )}
               </>
             )}

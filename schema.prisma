@@ -41,14 +41,15 @@ model Game {
 }
 
 model Invitation {
-    id        String     @id @default(cuid())
-    answer    Boolean?
-    emailSent Boolean?
-    gameId    String?
-    userId    String?
-    benchType BenchType?
-    game      Game?      @relation(fields: [gameId], references: [id])
-    user      User?      @relation(fields: [userId], references: [id])
+    id              String     @id @default(cuid())
+    answer          Boolean?
+    emailSent       Boolean?
+    benchType       BenchType?
+    validInvitation Boolean?
+    gameId          String?
+    userId          String?
+    game            Game?      @relation(fields: [gameId], references: [id])
+    user            User?      @relation(fields: [userId], references: [id])
 
     @@index([userId, gameId])
 }

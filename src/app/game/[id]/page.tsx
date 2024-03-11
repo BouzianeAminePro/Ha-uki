@@ -133,25 +133,27 @@ export default function Page({ params: { id } }: { params: { id: string } }) {
           name={String(game?.name ?? "Game")}
         />
       </div>
-      <div className={cn("ml-auto")}>
-        <Sheet>
-          <SheetTrigger>
-            <Button size="icon">
-              <PlusIcon />
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="right">
-            <SheetHeader>
-              <SheetTitle>Invitations:</SheetTitle>
-            </SheetHeader>
-            <InvitationForm gameId={id}>
-              <SheetClose>
-                <Button type="submit">Confirm</Button>
-              </SheetClose>
-            </InvitationForm>
-          </SheetContent>
-        </Sheet>
-      </div>
+      {isGameOwner && (
+        <div className={cn("ml-auto")}>
+          <Sheet>
+            <SheetTrigger>
+              <Button size="icon">
+                <PlusIcon />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right">
+              <SheetHeader>
+                <SheetTitle>Invitations:</SheetTitle>
+              </SheetHeader>
+              <InvitationForm gameId={id}>
+                <SheetClose>
+                  <Button type="submit">Confirm</Button>
+                </SheetClose>
+              </InvitationForm>
+            </SheetContent>
+          </Sheet>
+        </div>
+      )}
       <Squad users={users ?? []} />
     </div>
   );

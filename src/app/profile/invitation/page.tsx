@@ -4,15 +4,16 @@ import dynamic from "next/dynamic";
 import { useCallback } from "react";
 
 import { Invitation } from "@prisma/client";
+import { useQueryClient } from "@tanstack/react-query";
 
 import { useInvitations } from "@/hooks/useInvitations";
 import { cn } from "@/lib";
 import { InvitationWithGameDetails } from "@/services/invitation.service";
 import { Switch } from "@/components/ui/switch";
 import { useInvitation } from "@/hooks/useInvitation";
-import { useQueryClient } from "@tanstack/react-query";
 import { QueryKeys } from "@/consts/types";
 import { useToast } from "@/components/ui/use-toast";
+import Skeleton from "@/components/ui/skeleton";
 
 const InvitationCard = dynamic(
   () => import("@/components/Invitation/InvitationCard/InvitationCard")
@@ -47,10 +48,25 @@ export default function Page() {
   );
   return (
     <div className={cn("flex flex-col w-full h-full p-5 md:p-0 gap-y-5")}>
-      {data?.records?.map(
-        (invitation: InvitationWithGameDetails, index: number) => {
-          return (
-            <InvitationCard invitation={invitation}>
+      <div
+        className={cn(
+          "scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0"
+        )}
+      >
+        Invitations
+      </div>
+      <div className={cn("text-xl text-muted-foreground")}>
+        This is where you can accept/decline invitations.
+      </div>
+      {isPending ? (
+        <div className="space-y-2">
+          <Skeleton className="h-4 w-[250px]" />
+          <Skeleton className="h-4 w-[200px]" />
+        </div>
+      ) : (
+        data?.records?.map(
+          (invitation: InvitationWithGameDetails, index: number) => (
+            <InvitationCard invitation={invitation} key={index}>
               {/* Action */}
               <Switch
                 className={cn("ml-auto")}
@@ -60,8 +76,8 @@ export default function Page() {
                 }
               />
             </InvitationCard>
-          );
-        }
+          )
+        )
       )}
     </div>
   );
