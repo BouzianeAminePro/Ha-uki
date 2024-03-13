@@ -1,0 +1,25 @@
+services:
+  jenkins:
+    container_name: jenkins
+    image: jenkins/jenkins:lts-jdk17
+    volumes:
+      - jenkins_home:/var/jenkins_home
+    ports:
+      - 8080:8080
+  sonarqube:
+    container_name: sonarqube
+    image: sonarqube:lts-community
+    volumes:
+      - sonarqube_data:/opt/sonarqube/data
+      - sonarqube_extensions:/opt/sonarqube/extensions
+      - sonarqube_logs:/opt/sonarqube/logs
+    ports:
+      - 9000:9000
+    depends_on:
+        - jenkins
+volumes:
+  jenkins_home:
+    external: true
+  sonarqube_data:
+  sonarqube_extensions:
+  sonarqube_logs:
