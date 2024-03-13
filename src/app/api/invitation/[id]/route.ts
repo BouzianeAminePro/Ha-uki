@@ -2,8 +2,6 @@ import { NextResponse, type NextRequest } from "next/server";
 import { PrismaClientInstance } from "@/lib";
 import { getCurrentSessionUser } from "@/services/session.service";
 
-export async function GET() {}
-
 export async function PATCH(request: NextRequest, { params: { id } }) {
   const body = await request.json();
   const prismaClient = PrismaClientInstance.getInstance();
@@ -25,12 +23,14 @@ export async function PATCH(request: NextRequest, { params: { id } }) {
     });
   }
 
-  const user = await getCurrentSessionUser();
-  if (!user || user.Game.every((game) => game?.id !== invitation?.gameId)) {
-    return NextResponse.json(null, {
-      status: 403,
-      statusText: "You don't have the rights to update this game",
-    });
+  if (Object.keys(body).length > 1 || !Object.keys(body).includes('answer')) {  
+    const user = await getCurrentSessionUser();
+    if (!user || user.Game.every((game) => game?.id !== invitation?.gameId)) {
+      return NextResponse.json(null, {
+        status: 403,
+        statusText: "You don't have the rights to update this game",
+      });
+    }
   }
 
   invitation = await prismaClient.invitation.update({

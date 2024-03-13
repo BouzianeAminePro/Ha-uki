@@ -5,6 +5,7 @@ import { getCurrentSessionUser } from "@/services/session.service";
 import { create, findAll } from "@/services/game.service";
 import * as invitationService from "@/services/invitation.service";
 import { findUserByEmail } from "@/services/user.service";
+import { content } from "@/mails/newComer";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -38,21 +39,23 @@ export async function POST(request: NextRequest) {
     userId: user ? user?.id : null,
   });
 
-  if (user) {
-    await Promise.all(
-      invitations.map(async (email: string) => {
-        await sendMail(email, "test node_mailer", "Test invite");
-        const userByEmail = await findUserByEmail(email);
-        if (userByEmail) {
-          await invitationService.create({
-            emailSent: true,
-            userId: userByEmail?.id,
-            gameId: game?.id,
-          });
-        }
-      })
-    );
-  }
+  await Promise.all(
+    invitations.flatMap(async (email: string) => {
+      const user = await findUserByEmail(email);
+      if (!user) {
+        return sendMail(email, "Join us", content(game.id, email), true);
+      } else {
+        return [
+          sendMail(email, "test node_mailer", "Test invite"),
+          invitationService.create({
+              emailSent: true,
+              userId: user?.id,
+              gameId: game?.id,
+          })
+        ]
+      }
+    })
+  );
 
   return NextResponse.json(game);
 }

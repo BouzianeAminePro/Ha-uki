@@ -3,8 +3,10 @@ generator client {
 }
 
 datasource db {
-    provider = "postgresql"
-    url      = env("DATABASE_URL")
+    provider          = "postgresql"
+    url               = env("DATABASE_URL")
+    directUrl         = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+    shadowDatabaseUrl = env("POSTGRES_URL_NON_POOLING") // used for migrations
 }
 
 model User {
@@ -17,6 +19,8 @@ model User {
     updatedAt     DateTime     @updatedAt
     Invitation    Invitation[]
     Game          Game[]
+
+    @@index([email], type: Hash)
 }
 
 model Game {
@@ -32,17 +36,22 @@ model Game {
     updatedAt  DateTime?    @updatedAt @map("updated_at")
     Invitation Invitation[]
     userId     String
+
+    @@index([id], type: Hash)
 }
 
 model Invitation {
-    id        String     @id @default(cuid())
-    answer    Boolean?
-    emailSent Boolean?
-    gameId    String?
-    userId    String?
-    benchType BenchType?
-    game      Game?      @relation(fields: [gameId], references: [id])
-    user      User?      @relation(fields: [userId], references: [id])
+    id              String     @id @default(cuid())
+    answer          Boolean?
+    emailSent       Boolean?
+    benchType       BenchType?
+    validInvitation Boolean?
+    gameId          String?
+    userId          String?
+    game            Game?      @relation(fields: [gameId], references: [id])
+    user            User?      @relation(fields: [userId], references: [id])
+
+    @@index([userId, gameId])
 }
 
 enum BenchType {

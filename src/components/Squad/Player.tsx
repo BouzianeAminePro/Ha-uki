@@ -44,8 +44,24 @@ export default function Player({
         )}
       </Avatar>
       <div className="ml-4 space-y-1">
-        <p className="text-sm font-medium leading-none">{name}</p>
-        <p className="text-sm text-muted-foreground">{email}</p>
+        <p
+          className={cn(
+            `text-sm font-medium leading-none ${
+              answer === false ? "line-through" : ""
+            }`
+          )}
+        >
+          {name}
+        </p>
+        <p
+          className={cn(
+            `text-sm text-muted-foreground ${
+              answer === false ? "line-through" : ""
+            }`
+          )}
+        >
+          {email}
+        </p>
       </div>
       <div className="ml-auto font-medium md:px-5">
         <StatusSymbol status={answer} />

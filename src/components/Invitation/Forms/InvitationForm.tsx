@@ -38,7 +38,7 @@ export default function InvitationForm({ children, gameId }) {
       if (!data.emails?.length || !isValidEmails) {
         return;
       }
- 
+
       setParams({ gameId });
       await createInvitation.mutateAsync({ data: data?.emails });
     },
@@ -65,7 +65,9 @@ export default function InvitationForm({ children, gameId }) {
                   }}
                 />
               </FormControl>
-              <FormDescription>Enter valid email(s)</FormDescription>
+              <FormDescription>
+                Enter valid email(s) (only gmail for now)
+              </FormDescription>
             </FormItem>
           )}
         />

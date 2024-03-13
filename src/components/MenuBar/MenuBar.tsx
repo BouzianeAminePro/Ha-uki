@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 import { useMemo } from "react";
 
@@ -27,7 +27,6 @@ import {
 } from "../ui/dropdown-menu";
 
 export default function MenuBar() {
-  const { push } = useRouter();
   const pathname = usePathname();
 
   const isShowCasePage = useMemo(() => pathname === "/", [pathname]);
@@ -83,21 +82,24 @@ export default function MenuBar() {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="min-w-[20px]">
                     {isShowCasePage ? (
-                      <DropdownMenuItem onClick={() => push("/game")}>
-                        <HomeIcon />
-                      </DropdownMenuItem>
+                      <Link href="/game">
+                        <DropdownMenuItem className={cn("cursor-pointer")}>
+                          <HomeIcon />
+                        </DropdownMenuItem>
+                      </Link>
                     ) : (
                       <></>
                     )}
-                    <DropdownMenuItem
-                      onClick={() =>
-                        push(isProfilePage ? "/game" : "/profile/information")
-                      }
+                    <Link
+                      href={isProfilePage ? "/game" : "/profile/information"}
                     >
-                      {isProfilePage ? <HomeIcon /> : <GearIcon />}
-                    </DropdownMenuItem>
+                      <DropdownMenuItem className={cn("cursor-pointer")}>
+                        {isProfilePage ? <HomeIcon /> : <GearIcon />}
+                      </DropdownMenuItem>
+                    </Link>
                     <DropdownMenuItem
                       onClick={() => signOut({ callbackUrl: "/" })}
+                      className={cn("cursor-pointer")}
                     >
                       <ExitIcon />
                     </DropdownMenuItem>

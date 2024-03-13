@@ -12,6 +12,12 @@ export async function create(body: Game) {
   });
 }
 
+export async function remove(id: string) {
+  return await prismaClient.game.delete({
+    where: { id },
+  });
+}
+
 export async function findAll(whereClause) {
   let orClause;
   if ("userId" in whereClause) {
