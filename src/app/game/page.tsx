@@ -34,9 +34,6 @@ const Skeleton = dynamic(() => import("@/components/ui/skeleton"));
 
 export default function Page() {
   const [currentTab, setCurrentTab] = useState("My games");
-  const searchParams = useSearchParams();
-  const pathname = usePathname();
-  const router = useRouter();
   const { data: session } = useSession();
 
   // useEffect(() => {
@@ -65,20 +62,9 @@ export default function Page() {
   const onTabChange = useCallback(
     (tabName: string, params = {} as any) => {
       setCurrentTab(tabName);
-      const current = new URLSearchParams(Array.from(searchParams.entries()));
-      if ("public" in params) {
-        current.set("public", params.public);
-      } else {
-        current.delete("public");
-      }
-
       setParams(params);
-      const search = current.toString();
-      const query = search ? `?${search}` : "";
-
-      router.push(`${pathname}${query}`);
     },
-    [searchParams, pathname, router]
+    []
   );
 
   const { data: games, isPending, setParams } = useGames();
