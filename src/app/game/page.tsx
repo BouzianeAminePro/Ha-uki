@@ -27,18 +27,59 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 const GameForm = dynamic(() => import("@/components/Game/Forms/GameForm"));
 const GameCard = dynamic(() => import("@/components/Game/GameCard/GameCard"));
 const Skeleton = dynamic(() => import("@/components/ui/skeleton"));
 
 export default function Page() {
   const [currentTab, setCurrentTab] = useState("My games");
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const router = useRouter();
   const { data: session } = useSession();
 
-  const onTabChange = useCallback((tabName: string, params = {}) => {
-    setCurrentTab(tabName);
-    setParams(params);
-  }, []);
+  // useEffect(() => {
+  //   const current = new URLSearchParams(Array.from(searchParams.entries()));
+  //   if (current.has("public")) {
+  //     setCurrentTab("public");
+  //   } else {
+  //     setCurrentTab("My games");
+  //   }
+  //   setParams(
+  //     Array.from(current.keys()).reduce((acc, curr) => {
+  //       return {
+  //         ...acc,
+  //         // [curr]: JSON.parse(current.get(curr)),
+  //         [curr]: current.get(curr),
+  //       };
+  //     }, {})
+  //   );
+
+  //   const search = current.toString();
+  //   const query = search ? `?${search}` : "";
+
+  //   router.push(`${pathname}${query}`);
+  // }, []);
+
+  const onTabChange = useCallback(
+    (tabName: string, params = {} as any) => {
+      setCurrentTab(tabName);
+      const current = new URLSearchParams(Array.from(searchParams.entries()));
+      if ("public" in params) {
+        current.set("public", params.public);
+      } else {
+        current.delete("public");
+      }
+
+      setParams(params);
+      const search = current.toString();
+      const query = search ? `?${search}` : "";
+
+      router.push(`${pathname}${query}`);
+    },
+    [searchParams, pathname, router]
+  );
 
   const { data: games, isPending, setParams } = useGames();
 

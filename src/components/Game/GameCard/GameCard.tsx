@@ -36,7 +36,7 @@ export default function GameCard({
     >
       <CardHeader>
         <CardTitle className={cn("flex")}>
-          <span className={cn("dark:text-muted-foreground")}>{name}</span>
+          <span className={cn("dark:text-muted-foreground w-[11ch]")}>{name}</span>
           <div className={cn("flex flex-row gap-x-2  items-center ml-auto")}>
             <Badge>
               {acceptedInvitations}/{maxPlayers}

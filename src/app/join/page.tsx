@@ -16,26 +16,23 @@ export default async function Page({ searchParams }) {
   ) {
     redirect("/");
   }
-  try {
-    const game = await findById(searchParams.gameId);
-    if (!game) return redirect("/");
 
-    const user = await userService.findUserByEmail(searchParams.email);
+  const game = await findById(searchParams.gameId);
+  if (!game) redirect("/");
 
-    if (!user) return redirect("/");
+  const user = await userService.findUserByEmail(searchParams.email);
+  if (!user) redirect("/");
 
-    const invitation = await findByUserId(user.id, game.id);
+  const invitation = await findByUserId(user.id, game.id);
+  if (invitation) redirect("/game");
 
-    if (invitation) return redirect("/game");
+  const joinInvite = await create({
+    emailSent: true,
+    gameId: searchParams.gameId,
+    userId: user.id,
+  });
 
-    await create({
-      emailSent: true,
-      gameId: searchParams.gameId,
-      userId: user.id,
-    });
-
-    return redirect("/game");
-  } catch (e) {}
+  redirect("/game");
 
   return (
     <div className={cn("flex flex-col items-center gap-y-2")}>
