@@ -33,7 +33,7 @@ export default function Player({
   );
 
   return (
-    <div className={cn("flex items-center cursor-pointer")} ref={drag}>
+    <div className={cn("flex items-center cursor-pointer w-full")} ref={drag}>
       <Avatar className="h-9 w-9">
         {image ? (
           <AvatarImage src={image ?? ""} alt="Avatar" />

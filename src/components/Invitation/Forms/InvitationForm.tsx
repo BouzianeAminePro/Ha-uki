@@ -16,7 +16,7 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 
-export default function InvitationForm({ children, gameId }) {
+export default function InvitationForm({ children, gameId, onSuccess }) {
   const [tags, setTags] = useState<string[]>([]);
 
   const isValidEmails = useMemo(
@@ -41,8 +41,9 @@ export default function InvitationForm({ children, gameId }) {
 
       setParams({ gameId });
       await createInvitation.mutateAsync({ data: data?.emails });
+      onSuccess && await onSuccess();
     },
-    [isValidEmails, gameId]
+    [isValidEmails, gameId, onSuccess]
   );
 
   return (

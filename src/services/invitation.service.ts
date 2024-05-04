@@ -57,3 +57,23 @@ export async function findByUserId(userId: string, gameId?: string) {
     }
   });
 }
+
+export async function findById(id: string) {
+  if(!id) return false;
+
+  return await prismaClient.invitation.findFirst({
+    where: {
+      id,
+    }
+  });
+}
+
+export async function deleteById(id: string) {
+  if(!id) return false;
+
+  return await prismaClient.invitation.delete({
+    where: {
+      id,
+    }
+  });
+}

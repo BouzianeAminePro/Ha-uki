@@ -42,7 +42,7 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 
 export default function Page({ params: { id } }: { params: { id: string } }) {
-  const { data, isPending, deleteGame } = useGame(id);
+  const { data, isPending, deleteGame, refetch } = useGame(id);
 
   const { toast } = useToast();
   const { data: session } = useSession();
@@ -145,7 +145,7 @@ export default function Page({ params: { id } }: { params: { id: string } }) {
               <SheetHeader>
                 <SheetTitle>Invitations:</SheetTitle>
               </SheetHeader>
-              <InvitationForm gameId={id}>
+              <InvitationForm gameId={id} onSuccess={refetch}>
                 <SheetClose>
                   <Button type="submit">Confirm</Button>
                 </SheetClose>
@@ -154,7 +154,11 @@ export default function Page({ params: { id } }: { params: { id: string } }) {
           </Sheet>
         </div>
       )}
-      <Squad users={users ?? []} />
+      <Squad
+        users={users ?? []}
+        isGameOwner={isGameOwner}
+        onUpdateSuccess={refetch}
+      />
     </div>
   );
 }

@@ -7,7 +7,7 @@ import { BenchType } from "@prisma/client";
 import { cn } from "@/lib";
 import RosterRegistry from "./RosterRegistry";
 
-export default function Squad({ users }) {
+export default function Squad({ users, isGameOwner, onUpdateSuccess }) {
   const officialSquad = useMemo(
     () => users?.filter(({ benchType }) => benchType === BenchType.OFFICIAL),
     [users]
@@ -25,9 +25,24 @@ export default function Squad({ users }) {
 
   return (
     <div className={cn("flex flex-col md:flex-row md:gap-x-5 gap-y-5")}>
-      <RosterRegistry roster={officialSquad} type={BenchType.OFFICIAL} />
-      <RosterRegistry roster={squad} title="Squad list" />
-      <RosterRegistry roster={reserveSquad} type={BenchType.RESERVE} />
+      <RosterRegistry
+        roster={officialSquad}
+        type={BenchType.OFFICIAL}
+        isGameOwner={isGameOwner}
+        onUpdateSuccess={onUpdateSuccess}
+      />
+      <RosterRegistry
+        roster={squad}
+        title="Squad list"
+        isGameOwner={isGameOwner}
+        onUpdateSuccess={onUpdateSuccess}
+      />
+      <RosterRegistry
+        roster={reserveSquad}
+        type={BenchType.RESERVE}
+        isGameOwner={isGameOwner}
+        onUpdateSuccess={onUpdateSuccess}
+      />
     </div>
   );
 }

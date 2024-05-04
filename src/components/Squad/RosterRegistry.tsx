@@ -1,24 +1,32 @@
 "use client";
 
+import { useCallback } from "react";
 import { useDrop } from "react-dnd";
-
 import { BenchType, Invitation } from "@prisma/client";
 
 import Player from "./Player";
 import { useInvitation } from "@/hooks/useInvitation";
 import { cn } from "@/lib";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Button } from "../ui/button";
+import { TrashIcon } from "@radix-ui/react-icons";
+import { useToast } from "../ui/use-toast";
 
 export default function RosterRegistry({
   roster,
   title,
   type = null,
+  isGameOwner = false,
+  onUpdateSuccess,
 }: {
   roster;
   title?: string;
   type?: BenchType | null;
+  isGameOwner;
+  onUpdateSuccess;
 }) {
-  const { updateInvitation } = useInvitation();
+  const { updateInvitation, deleteInvitation } = useInvitation();
+  const { toast } = useToast();
   const [{}, drop] = useDrop(
     () => ({
       accept: "player",
@@ -37,8 +45,22 @@ export default function RosterRegistry({
     [type]
   );
 
+  const onDelete = useCallback(
+    async (player) => {
+      await deleteInvitation.mutateAsync({
+        invitationId: player.invitationId,
+      });
+      onUpdateSuccess && await onUpdateSuccess();
+      toast({
+        title: "Information",
+        description: "Invitation deleted successfuly",
+      });
+    },
+    [toast, deleteInvitation]
+  );
+
   return (
-    <div className={cn("md:w-[300px]")} ref={drop}>
+    <div className={cn("md:w-[350px]")} ref={drop}>
       <Card>
         <CardHeader>
           <CardTitle>{title ?? `${type} squad`}</CardTitle>
@@ -46,14 +68,25 @@ export default function RosterRegistry({
         <CardContent className={cn("flex flex-col gap-y-3 w-full h-full")}>
           {roster?.map(
             ({ image, name, answer, email, ...player }, index: number) => (
-              <Player
-                key={index}
-                image={image}
-                name={name}
-                answer={answer}
-                email={email}
-                {...player}
-              />
+              <div className="flex flex-row gap-x-4">
+                <Player
+                  key={index}
+                  image={image}
+                  name={name}
+                  answer={answer}
+                  email={email}
+                  {...player}
+                />
+                {isGameOwner && (
+                  <Button
+                    className="ml-auto"
+                    size="icon"
+                    onClick={async () => await onDelete(player)}
+                  >
+                    <TrashIcon />
+                  </Button>
+                )}
+              </div>
             )
           )}
         </CardContent>

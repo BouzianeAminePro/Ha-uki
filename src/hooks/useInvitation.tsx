@@ -46,6 +46,13 @@ export function useInvitation(id?: string) {
       }),
   });
 
+  const deleteInvitation = useMutation({
+    mutationFn: async ({ invitationId }: { invitationId: string }) =>
+      await axios.delete(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/invitation/${invitationId}`
+      ),
+  });
+
   const createInvitation = useMutation({
     mutationFn: async ({ data }: { data: any }) =>
       await axios.post(
@@ -72,6 +79,7 @@ export function useInvitation(id?: string) {
     status,
     updateInvitation,
     createInvitation,
+    deleteInvitation,
     params,
     setParams,
   };
