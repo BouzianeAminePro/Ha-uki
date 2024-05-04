@@ -45,7 +45,7 @@ model Invitation {
     answer          Boolean?
     emailSent       Boolean?
     benchType       BenchType?
-    validInvitation Boolean?
+    validInvitation Boolean?   @default(true)
     gameId          String?
     userId          String?
     game            Game?      @relation(fields: [gameId], references: [id])

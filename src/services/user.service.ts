@@ -33,6 +33,47 @@ export async function findUserByEmail(email?: string | null) {
         },
         select: {
           id: true,
+          Invitation: {
+            select: {
+              id: true,
+              validInvitation: true,
+            }
+          }
+        },
+      },
+    },
+  });
+}
+
+export async function findUserById(id?: string | null) {
+  if (!id) return false;
+
+  return await prismaClient.user.findUnique({
+    where: {
+      id,
+    },
+    include: {
+      Game: {
+        where: {
+          OR: [
+            {
+              createdBy: {
+                id,
+              },
+            },
+            {
+              Invitation: {
+                some: {
+                  user: {
+                    id,
+                  },
+                },
+              },
+            },
+          ],
+        },
+        select: {
+          id: true,
         },
       },
     },

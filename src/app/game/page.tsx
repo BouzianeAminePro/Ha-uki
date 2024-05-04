@@ -2,12 +2,12 @@
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
+// import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useState } from "react";
 
-import { Game, Invitation } from "@prisma/client";
+import { Game, Invitation, User } from "@prisma/client";
 import { EnvelopeClosedIcon, PlusIcon } from "@radix-ui/react-icons";
 import { useSession } from "next-auth/react";
-import { User } from "next-auth";
 
 import { cn } from "@/lib";
 import {
@@ -27,14 +27,16 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { askInvitation } from "@/actions/askInvitation";
+import { useToast } from "@/components/ui/use-toast";
 const GameForm = dynamic(() => import("@/components/Game/Forms/GameForm"));
 const GameCard = dynamic(() => import("@/components/Game/GameCard/GameCard"));
 const Skeleton = dynamic(() => import("@/components/ui/skeleton"));
 
 export default function Page() {
   const [currentTab, setCurrentTab] = useState("My games");
-  const { data: session } = useSession();
+  const { data: session, update } = useSession();
+  const { toast } = useToast();
 
   // useEffect(() => {
   //   const current = new URLSearchParams(Array.from(searchParams.entries()));
@@ -59,22 +61,20 @@ export default function Page() {
   //   router.push(`${pathname}${query}`);
   // }, []);
 
-  const onTabChange = useCallback(
-    (tabName: string, params = {} as any) => {
-      setCurrentTab(tabName);
-      setParams(params);
-    },
-    []
-  );
+  const onTabChange = useCallback((tabName: string, params = {} as any) => {
+    setCurrentTab(tabName);
+    setParams(params);
+  }, []);
 
-  const { data: games, isPending, setParams } = useGames();
+  const { data: games, isPending, setParams, refetch } = useGames();
 
   const isGameOwnerOrInvited = useCallback(
-    (gameId: string) => {
-      return (session?.user as User & { Game: Game[] })?.Game?.some(
-        (item) => item?.id === gameId
-      );
-    },
+    (game: Game & { Invitation: Array<Invitation> }) =>
+      game?.userId === (session?.user as User)?.id ||
+      game?.Invitation?.some(
+        (invitation: Invitation) =>
+          invitation.userId === (session?.user as User)?.id
+      ),
     [session?.user]
   );
 
@@ -142,18 +142,29 @@ export default function Page() {
                             name={String(game.name ?? "Game")}
                             canRequest={
                               currentTab === "public" &&
-                              !isGameOwnerOrInvited(game?.id)
+                              !isGameOwnerOrInvited(game)
                             }
                           />
                         </Link>
                         {currentTab === "public" &&
-                        !isGameOwnerOrInvited(game?.id) ? (
+                        !isGameOwnerOrInvited(game) ? (
                           <div>
                             <TooltipProvider>
                               <Tooltip>
                                 <TooltipTrigger className="h-full">
                                   <Button
-                                    onClick={console.log}
+                                    onClick={async () => {
+                                      await askInvitation(
+                                        game.userId,
+                                        game?.id,
+                                        session?.user?.email ?? undefined
+                                      );
+                                      await refetch();
+                                      toast({
+                                        title: "Information",
+                                        description: "Request sent",
+                                      });
+                                    }}
                                     className="flex h-full rounded-tl-none rounded-bl-none"
                                   >
                                     {/* if invitation is sent opened the enevlope icon */}

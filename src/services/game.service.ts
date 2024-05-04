@@ -49,6 +49,8 @@ export async function findAll(whereClause) {
         },
         select: {
           answer: true,
+          validInvitation: true,
+          userId: true
         },
       },
     },

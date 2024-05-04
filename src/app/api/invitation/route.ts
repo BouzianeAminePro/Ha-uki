@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { findUserByEmail } from "@/services/user.service";
 import { create, findAll } from "@/services/invitation.service";
 import { sendMail } from "@/services/mailer.service";
-import { content } from "@/mails/newComer";
+import { content as newComerMailContent } from "@/mails/newComer";
 import { getCurrentSessionUser } from "@/services/session.service";
 
 export async function GET(request: NextRequest) {
@@ -36,10 +36,10 @@ export async function POST(request: NextRequest) {
     emails?.flatMap(async (email: string) => {
       const user = await findUserByEmail(email);
       if (!user) {
-        return sendMail(email, "Join us", content(gameId, email), true);
+        return sendMail(email, "Join us", newComerMailContent(gameId, email), true);
       } else {
         return [
-          sendMail(user?.email, "invitation", content(gameId, email), true),
+          sendMail(user?.email, "Invitation", newComerMailContent(gameId, email), true),
           create({
             emailSent: true,
             userId: user?.id,

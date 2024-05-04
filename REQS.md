@@ -4,8 +4,8 @@
     [x] Make tabs for my games and public games
     [x] Public games as a card with a send request to join the game (to the createdBy)
     [] add filter (active, public, ...)
-    [] Make invitation line and make field emailSent to true in the emailSent field so i can filter and don't send again an email
-    [] if the user don't exist send a different email with a link to the api to create to ask hi mto connect with the redirect to the api to automatically create the invitation line
+    [x] Make invitation line and make field emailSent to true in the emailSent field so i can filter and don't send again an email
+    [x] if the user don't exist send a different email with a link to the api to create to ask hi mto connect with the redirect to the api to automatically create the invitation line
 
 ## In the game/:id page
 

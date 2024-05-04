@@ -13,11 +13,11 @@ export async function middleware(request: NextRequest & { user: any }) {
   if (
     PROTECTED_ROUTES.some((route) => request.nextUrl.pathname.includes(route))
   ) {
+    // TODO if you're neither the creator of the game or neither invited to it you can't access to it
     if (!token) {
       return NextResponse.redirect(new URL("/api/auth/signin", request.url));
     }
 
-    // TODO if you're neither the creator of the game or neither invited to it you can't access to it
   }
 
   return NextResponse.next();

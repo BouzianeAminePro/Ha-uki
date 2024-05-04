@@ -3,9 +3,9 @@ import { redirect } from "next/navigation";
 
 import { cn } from "@/lib";
 import { Button } from "@/components/ui/button";
-import { findById } from "@/services/game.service";
+import * as gameService from "@/services/game.service";
 import * as userService from "@/services/user.service";
-import { create, findByUserId } from "@/services/invitation.service";
+import * as invitationService from "@/services/invitation.service";
 
 export default async function Page({ searchParams }) {
   const searchParamsKeys = Object.keys(searchParams) ?? [];
@@ -17,22 +17,20 @@ export default async function Page({ searchParams }) {
     redirect("/");
   }
 
-  const game = await findById(searchParams.gameId);
+  const game = await gameService.findById(searchParams.gameId);
   if (!game) redirect("/");
 
   const user = await userService.findUserByEmail(searchParams.email);
   if (!user) redirect("/");
 
-  const invitation = await findByUserId(user.id, game.id);
+  const invitation = await invitationService.findByUserId(user.id, game.id);
   if (invitation) redirect("/game");
 
-  const joinInvite = await create({
+  const newInvitation = await invitationService.create({
     emailSent: true,
     gameId: searchParams.gameId,
     userId: user.id,
   });
-
-  redirect("/game");
 
   return (
     <div className={cn("flex flex-col items-center gap-y-2")}>
@@ -46,9 +44,11 @@ export default async function Page({ searchParams }) {
         </Link>
         , someone who wants you to join a game send you this invitation
       </div>
-      <Link href={`${process.env.SERVER_URL}/game`}>
-        <Button>Join us & the game</Button>
-      </Link>
+      {!!newInvitation && (
+        <Link href={`${process.env.SERVER_URL}/game`}>
+          <Button>Join us & the game</Button>
+        </Link>
+      )}
     </div>
   );
 }

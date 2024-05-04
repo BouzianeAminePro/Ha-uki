@@ -18,6 +18,7 @@ export default function useGames() {
     isPending,
     error = {} as AxiosError,
     status,
+    refetch
   } = useQuery({
     queryKey: [QueryKeys.GAMES, params],
     queryFn: async () =>
@@ -47,6 +48,7 @@ export default function useGames() {
     isPending,
     error,
     status,
+    refetch,
     setParams,
     createGame,
   };
