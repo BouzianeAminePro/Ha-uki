@@ -10,7 +10,7 @@ import { User } from "next-auth";
 import { PlusIcon, TrashIcon } from "@radix-ui/react-icons";
 
 import { cn } from "@/lib";
-const GameCard = dynamic(() => import("@/components/Game/GameCard/GameCard"));
+const GameCard = dynamic(() => import("@/app/game/_components/GameCard/GameCard"));
 const Squad = dynamic(() => import("@/components/Squad/Squad"));
 const Skeleton = dynamic(() => import("@/components/ui/skeleton"));
 const InvitationForm = dynamic(
