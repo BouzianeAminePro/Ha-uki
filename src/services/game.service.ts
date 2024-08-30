@@ -37,10 +37,15 @@ export async function findAll(whereClause) {
     delete whereClause?.userId;
   }
 
+  const now = new Date();
+
   return await prismaClient.game.findMany({
     where: {
       ...orClause,
       ...whereClause,
+      startDate: {
+        gte: now,
+      },
     },
     include: {
       Invitation: {
