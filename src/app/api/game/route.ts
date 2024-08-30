@@ -5,6 +5,8 @@ import { getCurrentSessionUser } from "@/services/session.service";
 import { create, findAll } from "@/services/game.service";
 import * as invitationService from "@/services/invitation.service";
 import { findUserByEmail } from "@/services/user.service";
+import { create as friendShipCreate } from "@/services/friendship.service";
+
 import { content } from "@/mails/newComer";
 import { PrismaClientInstance } from "@/lib";
 
@@ -57,25 +59,16 @@ export async function POST(request: NextRequest) {
           userId: invitedUser.id,
           gameId: game.id,
         });
-        
-        // Check if friendship already exists
-        const existingFriendship = await prisma.friendship.findFirst({
-          where: {
-            OR: [
-              { userId: currentUser.id, friendId: invitedUser.id },
-              { userId: invitedUser.id, friendId: currentUser.id }
-            ]
-          }
-        });
 
-        if (!existingFriendship) {
-          await prisma.friendship.create({
-            data: {
-              user: { connect: { id: currentUser.id } },
-              friend: { connect: { id: invitedUser.id } },
-            },
-          });
-        }
+        // Create friendship for both users
+        await friendShipCreate({
+          user: { connect: { id: currentUser.id } },
+          friend: { connect: { id: invitedUser.id } },
+        });
+        await friendShipCreate({
+          user: { connect: { id: invitedUser.id } },
+          friend: { connect: { id: currentUser.id } },
+        });
       }
     })
   );

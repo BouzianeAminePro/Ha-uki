@@ -206,7 +206,9 @@ export default function GameForm({
         <div className="mt-4">
           <FormLabel>Friends</FormLabel>
           <div className="flex flex-wrap gap-2 mt-2">
-            {friendshipData?.data?.length ? friendshipData.data.map((friend, index) => (
+            {friendshipData?.data?.length ? friendshipData.data
+              .filter(friend => friend.friend.id !== userId) // Filter out the current user
+              .map((friend, index) => (
               <div 
                 key={index} 
                 className={cn(
