@@ -17,14 +17,21 @@ import {
 } from "@/components/ui/form";
 import { useFriendship } from "@/hooks/useFriendship";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { cn } from "@/lib/utils"; // Make sure to import the cn utility if not already present
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { FriendsResult } from "@/services/friendship.service";
 
-export default function InvitationForm({ children, gameId, onSuccess }) {
+interface InvitationFormProps {
+  gameId: string;
+  onSuccess?: () => Promise<void>;
+  existingInvitations?: string[];
+}
+
+export default function InvitationForm({ gameId, onSuccess, existingInvitations = [] }: InvitationFormProps) {
   const { data: session } = useSession();
-  const userId = (session?.user as any)?.id;
+  const userId = (session?.user as { id: string })?.id;
 
   const [tags, setTags] = useState<string[]>([]);
-  const [selectedFriends, setSelectedFriends] = useState<string[]>([]);
 
   const { data: friendshipData, isPending: isFriendshipLoading } = useFriendship(userId);
 
@@ -33,9 +40,8 @@ export default function InvitationForm({ children, gameId, onSuccess }) {
     [tags]
   );
 
-  const form = useForm({
+  const form = useForm<{ emails: string[] }>({
     defaultValues: { emails: [] },
-    disabled: !tags?.length || !isValidEmails,
   });
 
   const { setValue } = form;
@@ -43,8 +49,7 @@ export default function InvitationForm({ children, gameId, onSuccess }) {
   const { createInvitation, setParams } = useInvitation();
 
   const onSubmit = useCallback(
-    async (data) => {
-      console.log(data, tags)
+    async () => {
       if (!tags?.length || !isValidEmails) {
         return;
       }
@@ -53,24 +58,21 @@ export default function InvitationForm({ children, gameId, onSuccess }) {
       await createInvitation.mutateAsync({ data: tags });
       onSuccess && await onSuccess();
     },
-    [isValidEmails, gameId, onSuccess, tags]
+    [isValidEmails, gameId, onSuccess, tags, createInvitation, setParams]
   );
+
+  const friends = useMemo(() => {
+    if (!friendshipData?.data) return [];
+    return (friendshipData.data as FriendsResult).filter(friend => friend.friend.id !== userId);
+  }, [friendshipData, userId]);
 
   const addFriendEmail = useCallback((email: string) => {
     if (!tags.includes(email)) {
       const newTags = [...tags, email];
       setTags(newTags);
-      setValue("emails", newTags as any);
-      setSelectedFriends([...selectedFriends, email]);
+      setValue("emails", newTags);
     }
-  }, [tags, setValue, selectedFriends]);
-
-  const handleTagRemove = useCallback((removedTag: string) => {
-    const newTags = tags.filter(tag => tag !== removedTag);
-    setTags(newTags);
-    setValue("emails", newTags as any);
-    setSelectedFriends(selectedFriends.filter(email => email !== removedTag));
-  }, [tags, setValue, selectedFriends]);
+  }, [tags, setValue]);
 
   return (
     <Form {...form}>
@@ -80,7 +82,7 @@ export default function InvitationForm({ children, gameId, onSuccess }) {
           name="emails"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Invitations (mail)</FormLabel>
+              <FormLabel>Invitations (email)</FormLabel>
               <FormControl>
                 <TagInput
                   {...field}
@@ -88,10 +90,7 @@ export default function InvitationForm({ children, gameId, onSuccess }) {
                   tags={tags}
                   setTags={(newTags) => {
                     setTags(newTags);
-                    setValue("emails", newTags as any);
-                    setSelectedFriends(newTags);
-                    const removedTags = tags.filter(tag => !(newTags as any).includes(tag));
-                    removedTags.forEach(tag => handleTagRemove(tag));
+                    setValue("emails", newTags);
                   }}
                 />
               </FormControl>
@@ -104,44 +103,42 @@ export default function InvitationForm({ children, gameId, onSuccess }) {
         <div className="mt-4">
           <FormLabel>Friends</FormLabel>
           <div className="flex flex-wrap gap-2 mt-2">
-            {friendshipData?.data?.length ? friendshipData.data
-              .filter(friend => friend.friend.id !== userId) // Filter out the current user
-              .map((friend, index) => (
-              <div 
-                key={index} 
-                className={cn(
-                  "flex items-center space-x-2 bg-secondary text-secondary-foreground rounded-full px-3 py-1",
-                  selectedFriends.includes(friend.friend.email) 
-                    ? "opacity-50 cursor-not-allowed" 
-                    : "cursor-pointer hover:bg-secondary/80"
-                )}
-                onClick={() => !selectedFriends.includes(friend.friend.email) && addFriendEmail(friend.friend.email)}
-              >
-                <Avatar className="h-5 w-5">
-                  <AvatarImage src={friend.friend.image || "/default-avatar.png"} alt={friend.name || "Friend"} />
-                  <AvatarFallback>{friend.friend.name?.charAt(0) || 'F'}</AvatarFallback>
-                </Avatar>
-                <span className={cn(
-                  "text-sm",
-                  selectedFriends.includes(friend.friend.email) && "line-through"
-                )}>
-                  {friend.friend.name}
-                </span>
-              </div>
-            )) : null}
+            {isFriendshipLoading ? (
+              <p>Loading friends...</p>
+            ) : friends.length ? (
+              friends.map((friend, index) => {
+                const isInvited = tags.includes(friend.friend.email) || existingInvitations.includes(friend.friend.email);
+                return (
+                  <div 
+                    key={index} 
+                    className={cn(
+                      "flex items-center space-x-2 bg-secondary text-secondary-foreground rounded-full px-3 py-1",
+                      isInvited ? "opacity-50 line-through pointer-events-none" : "cursor-pointer hover:bg-secondary/80"
+                    )}
+                    onClick={() => !isInvited && addFriendEmail(friend.friend.email)}
+                  >
+                    <Avatar className="h-5 w-5">
+                      <AvatarImage src={friend.friend.image || "/default-avatar.png"} alt={friend.friend.name || "Friend"} />
+                      <AvatarFallback>{friend.friend.name?.charAt(0) || 'F'}</AvatarFallback>
+                    </Avatar>
+                    <span className="text-sm">{friend.friend.name}</span>
+                  </div>
+                );
+              })
+            ) : (
+              <p>No friends found.</p>
+            )}
           </div>
         </div>
-        {!isValidEmails ? (
+        {!isValidEmails && tags.length > 0 && (
           <Alert variant="destructive">
             <AlertTitle>Error</AlertTitle>
             <AlertDescription>
-              One of the mails provided is not valid{" "}
+              One of the emails provided is not valid
             </AlertDescription>
           </Alert>
-        ) : (
-          <></>
         )}
-        {children}
+        <Button type="submit" disabled={!tags.length || !isValidEmails}>Invite</Button>
       </form>
     </Form>
   );

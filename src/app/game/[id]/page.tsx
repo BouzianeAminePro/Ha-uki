@@ -145,8 +145,12 @@ export default function Page({ params: { id } }: { params: { id: string } }) {
               <SheetHeader>
                 <SheetTitle>Invitations:</SheetTitle>
               </SheetHeader>
-              <InvitationForm gameId={id} onSuccess={refetch}>
-                <SheetClose>
+              <InvitationForm 
+                gameId={id} 
+                onSuccess={refetch}
+                existingInvitations={game?.Invitation?.map(invitation => invitation.user.email) || []}
+              >
+                <SheetClose asChild>
                   <Button type="submit">Confirm</Button>
                 </SheetClose>
               </InvitationForm>
