@@ -64,7 +64,7 @@ export default function Page() {
           <Skeleton className="h-4 w-[200px]" />
         </div>
       ) : (
-        data?.records?.map(
+        !!data?.records?.length ? data?.records?.map(
           (invitation: InvitationWithGameDetails, index: number) => (
             <InvitationCard invitation={invitation} key={index}>
               {/* Action */}
@@ -77,6 +77,10 @@ export default function Page() {
               />
             </InvitationCard>
           )
+        ) : (
+          <div className="text-muted-foreground">
+            No invitations found.
+          </div>
         )
       )}
     </div>

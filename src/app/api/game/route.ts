@@ -6,6 +6,7 @@ import { create, findAll } from "@/services/game.service";
 import * as invitationService from "@/services/invitation.service";
 import { findUserByEmail } from "@/services/user.service";
 import { content } from "@/mails/newComer";
+import { PrismaClientInstance } from "@/lib";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -39,23 +40,38 @@ export async function POST(request: NextRequest) {
     userId: user ? user?.id : null,
   });
 
-  await Promise.all(
-    invitations.flatMap(async (email: string) => {
-      const user = await findUserByEmail(email);
-      if (!user) {
-        return sendMail(email, "Join us", content(game.id, email), true);
+  const invitedUsers = await Promise.all(
+    invitations.map(async (email: string) => {
+      const invitedUser = await findUserByEmail(email);
+      if (!invitedUser) {
+        await sendMail(email, "Join us", content(game.id, email), true);
+        return null;
       } else {
-        return [
-          sendMail(email, "test node_mailer", "Test invite"),
-          invitationService.create({
-              emailSent: true,
-              userId: user?.id,
-              gameId: game?.id,
-          })
-        ]
+        await sendMail(email, "test node_mailer", "Test invite");
+        await invitationService.create({
+          emailSent: true,
+          userId: invitedUser.id,
+          gameId: game.id,
+        });
+        return invitedUser;
       }
     })
   );
+
+  // Add invited users to the creator's friends list
+  if (user) {
+    const prisma = PrismaClientInstance.getInstance();
+    const newFriends = invitedUsers.filter((u): u is any => u !== null);
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        friends: {
+          connect: newFriends.map(friend => ({ id: friend.id })),
+        },
+      },
+    });
+  }
 
   return NextResponse.json(game);
 }

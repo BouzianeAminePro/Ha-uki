@@ -3,25 +3,40 @@ generator client {
 }
 
 datasource db {
-    provider          = "postgresql"
-    url               = env("DATABASE_URL")
-    directUrl         = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
-    shadowDatabaseUrl = env("POSTGRES_URL_NON_POOLING") // used for migrations
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+    // directUrl         = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+    // shadowDatabaseUrl = env("POSTGRES_URL_NON_POOLING") // used for migrations
 }
 
 model User {
-    id            String       @id @default(cuid())
-    name          String?
-    email         String?      @unique
-    emailVerified DateTime?
-    image         String?
-    createdAt     DateTime     @default(now())
-    updatedAt     DateTime     @updatedAt
-    Invitation    Invitation[]
-    Game          Game[]
+  id            String       @id @default(cuid())
+  name          String?
+  email         String?      @unique
+  emailVerified DateTime?
+  image         String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  Invitation    Invitation[]
+  Game          Game[]
 
-    @@index([email], type: Hash)
+  // Many-to-many relationship
+  friends       Friendship[] @relation("Friends")
+  friendOf      Friendship[] @relation("FriendsInverse")
+
+  @@index([email], type: Hash)
 }
+
+model Friendship {
+  id        String   @id @default(cuid())
+  userId    String
+  friendId  String
+  user      User     @relation("Friends", fields: [userId], references: [id])
+  friend    User     @relation("FriendsInverse", fields: [friendId], references: [id])
+
+  @@unique([userId, friendId])
+}
+
 
 model Game {
     id         String       @id @default(cuid())
