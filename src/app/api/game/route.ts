@@ -33,45 +33,52 @@ export async function POST(request: NextRequest) {
   const body = await request.json();
   const { invitations = [], ...gameData } = body;
 
-  const user = await getCurrentSessionUser();
+  const currentUser = await getCurrentSessionUser();
+  if (!currentUser) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
   const game = await create({
     ...gameData,
-    userId: user ? user?.id : null,
+    userId: currentUser.id,
   });
 
-  const invitedUsers = await Promise.all(
+  const prisma = PrismaClientInstance.getInstance();
+
+  await Promise.all(
     invitations.map(async (email: string) => {
       const invitedUser = await findUserByEmail(email);
       if (!invitedUser) {
         await sendMail(email, "Join us", content(game.id, email), true);
-        return null;
       } else {
-        await sendMail(email, "test node_mailer", "Test invite");
+        await sendMail(email, "Invitation", content(game.id, email), true);
         await invitationService.create({
           emailSent: true,
           userId: invitedUser.id,
           gameId: game.id,
         });
-        return invitedUser;
+        
+        // Check if friendship already exists
+        const existingFriendship = await prisma.friendship.findFirst({
+          where: {
+            OR: [
+              { userId: currentUser.id, friendId: invitedUser.id },
+              { userId: invitedUser.id, friendId: currentUser.id }
+            ]
+          }
+        });
+
+        if (!existingFriendship) {
+          await prisma.friendship.create({
+            data: {
+              user: { connect: { id: currentUser.id } },
+              friend: { connect: { id: invitedUser.id } },
+            },
+          });
+        }
       }
     })
   );
-
-  // Add invited users to the creator's friends list
-  if (user) {
-    const prisma = PrismaClientInstance.getInstance();
-    const newFriends = invitedUsers.filter((u): u is any => u !== null);
-
-    await prisma.user.update({
-      where: { id: user.id },
-      data: {
-        friends: {
-          connect: newFriends.map(friend => ({ id: friend.id })),
-        },
-      },
-    });
-  }
 
   return NextResponse.json(game);
 }
