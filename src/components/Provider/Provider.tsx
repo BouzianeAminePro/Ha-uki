@@ -36,12 +36,22 @@ export default function Provider({
               mutations: {
                 // which converts to 5 minutes
                 gcTime: 300000,
-                onError(error) {
+                onError(error: any) {
+                  let title = "";
+                  switch (error.status) {
+                    case 401:
+                    case 403:
+                      title = "Unauthorized for this resource";
+                      break;
+                    case 404:
+                      title = "Not found";
+                      break;
+                    default:
+                      title = "Opps! error on server call"
+                  }
                   toast({
                     variant: "destructive",
-                    title:
-                      (error as AxiosError)?.response?.statusText ??
-                      "Opps! error on server call",
+                    title
                   });
                 },
               },

@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode, useState, useCallback } from "react";
+import { ReactNode, useState, useCallback, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { Game } from "@prisma/client";
 import { useSession } from "next-auth/react";
@@ -20,6 +20,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import { emailRegex } from "@/consts/regex";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export default function GameForm({
   game,
@@ -58,6 +60,11 @@ export default function GameForm({
     setValue("invitations", newTags as any);
     setSelectedFriends(selectedFriends.filter(email => email !== removedTag));
   }, [tags, setValue, selectedFriends]);
+
+  const isValidEmails = useMemo(
+    () => tags.every((tag) => emailRegex.test(tag)),
+    [tags]
+  );
 
   return (
     <Form {...form}>
@@ -203,34 +210,42 @@ export default function GameForm({
             </FormItem>
           )}
         />
-        <div className="mt-4">
+        {!isValidEmails && tags.length > 0 && (
+          <Alert variant="destructive" className="dark:bg-red-900 dark:text-red-100 bg-red-100 text-red-900">
+            <AlertTitle className="dark:text-red-50 text-red-800 font-semibold">Error</AlertTitle>
+            <AlertDescription className="dark:text-red-200 text-red-700">
+              One of the emails provided is not valid
+            </AlertDescription>
+          </Alert>
+        )}
+        <div className="my-[1.5]">
           <FormLabel>Friends</FormLabel>
           <div className="flex flex-wrap gap-2 mt-2">
             {friendshipData?.data?.length ? friendshipData.data
               .filter(friend => friend.friend.id !== userId) // Filter out the current user
               .map((friend, index) => (
-              <div 
-                key={index} 
-                className={cn(
-                  "flex items-center space-x-2 bg-secondary text-secondary-foreground rounded-full px-3 py-1",
-                  selectedFriends.includes(friend.friend.email) 
-                    ? "opacity-50 cursor-not-allowed" 
-                    : "cursor-pointer hover:bg-secondary/80"
-                )}
-                onClick={() => !selectedFriends.includes(friend.friend.email) && addFriendEmail(friend.friend.email)}
-              >
-                <Avatar className="h-5 w-5">
-                  <AvatarImage src={friend.friend.image || "/default-avatar.png"} alt={friend.name || "Friend"} />
-                  <AvatarFallback>{friend.friend.name?.charAt(0) || 'F'}</AvatarFallback>
-                </Avatar>
-                <span className={cn(
-                  "text-sm",
-                  selectedFriends.includes(friend.friend.email) && "line-through"
-                )}>
-                  {friend.friend.name}
-                </span>
-              </div>
-            )) : null}
+                <div
+                  key={index}
+                  className={cn(
+                    "flex items-center space-x-2 bg-secondary text-secondary-foreground rounded-full px-3 py-1",
+                    selectedFriends.includes(friend.friend.email)
+                      ? "opacity-50 cursor-not-allowed"
+                      : "cursor-pointer hover:bg-secondary/80"
+                  )}
+                  onClick={() => !selectedFriends.includes(friend.friend.email) && addFriendEmail(friend.friend.email)}
+                >
+                  <Avatar className="h-5 w-5">
+                    <AvatarImage src={friend.friend.image || "/default-avatar.png"} alt={friend.name || "Friend"} />
+                    <AvatarFallback>{friend.friend.name?.charAt(0) || 'F'}</AvatarFallback>
+                  </Avatar>
+                  <span className={cn(
+                    "text-sm",
+                    selectedFriends.includes(friend.friend.email) && "line-through"
+                  )}>
+                    {friend.friend.name}
+                  </span>
+                </div>
+              )) : null}
           </div>
         </div>
         {children}

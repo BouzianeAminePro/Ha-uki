@@ -131,9 +131,9 @@ export default function InvitationForm({ gameId, onSuccess, existingInvitations 
           </div>
         </div>
         {!isValidEmails && tags.length > 0 && (
-          <Alert variant="destructive">
-            <AlertTitle>Error</AlertTitle>
-            <AlertDescription>
+          <Alert variant="destructive" className="dark:bg-red-900 dark:text-red-100 bg-red-100 text-red-900">
+            <AlertTitle className="dark:text-red-50 text-red-800 font-semibold">Error</AlertTitle>
+            <AlertDescription className="dark:text-red-200 text-red-700">
               One of the emails provided is not valid
             </AlertDescription>
           </Alert>
