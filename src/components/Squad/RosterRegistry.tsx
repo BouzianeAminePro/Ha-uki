@@ -27,7 +27,7 @@ export default function RosterRegistry({
 }) {
   const { updateInvitation, deleteInvitation } = useInvitation();
   const { toast } = useToast();
-  const [{}, drop] = useDrop(
+  const [{ }, drop] = useDrop(
     () => ({
       accept: "player",
       collect: (monitor) => ({
@@ -65,7 +65,7 @@ export default function RosterRegistry({
         <CardHeader>
           <CardTitle>{title ?? `${type} squad`}</CardTitle>
         </CardHeader>
-        <CardContent className={cn("flex flex-col gap-y-3 w-full h-full")}>
+        <CardContent className={cn("flex flex-col gap-y-3 w-full h-full")} key={type}>
           {roster?.map(
             ({ image, name, answer, email, ...player }, index: number) => (
               <div className="flex flex-row gap-x-4">

@@ -37,6 +37,7 @@ export default function Provider({
                 // which converts to 5 minutes
                 gcTime: 300000,
                 onError(error: any) {
+                  console.log("--------Error---------", error);
                   let title = "";
                   switch (error.status) {
                     case 401:

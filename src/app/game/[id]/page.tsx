@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 import type { Game, Invitation } from "@prisma/client";
 import { useSession } from "next-auth/react";
@@ -82,6 +82,13 @@ export default function Page({ params: { id } }: { params: { id: string } }) {
     });
   }, []);
 
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+
+  const handleInvitationSuccess = useCallback(async () => {
+    await refetch();
+    setIsSheetOpen(false);
+  }, [refetch]);
+
   if (isPending) {
     return (
       <div className="flex flex-col space-y-3">
@@ -135,7 +142,7 @@ export default function Page({ params: { id } }: { params: { id: string } }) {
       </div>
       {isGameOwner && (
         <div className={cn("ml-auto")}>
-          <Sheet>
+          <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
             <SheetTrigger>
               <Button size="icon">
                 <PlusIcon />
@@ -147,13 +154,9 @@ export default function Page({ params: { id } }: { params: { id: string } }) {
               </SheetHeader>
               <InvitationForm 
                 gameId={id} 
-                onSuccess={refetch}
+                onSuccess={handleInvitationSuccess}
                 existingInvitations={game?.Invitation?.map(invitation => invitation.user.email) || []}
-              >
-                <SheetClose asChild>
-                  <Button type="submit">Confirm</Button>
-                </SheetClose>
-              </InvitationForm>
+              />
             </SheetContent>
           </Sheet>
         </div>

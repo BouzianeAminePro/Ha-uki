@@ -24,7 +24,7 @@ import { FriendsResult } from "@/services/friendship.service";
 interface InvitationFormProps {
   gameId: string;
   onSuccess?: () => Promise<void>;
-  existingInvitations?: string[];
+  existingInvitations?: (String | null)[];
 }
 
 export default function InvitationForm({ gameId, onSuccess, existingInvitations = [] }: InvitationFormProps) {
@@ -49,14 +49,17 @@ export default function InvitationForm({ gameId, onSuccess, existingInvitations 
   const { createInvitation, setParams } = useInvitation();
 
   const onSubmit = useCallback(
-    async () => {
+    async (e: React.FormEvent) => {
+      e.preventDefault();
       if (!tags?.length || !isValidEmails) {
         return;
       }
 
       setParams({ gameId });
       await createInvitation.mutateAsync({ data: tags });
-      onSuccess && await onSuccess();
+      if (onSuccess) {
+        await onSuccess();
+      }
     },
     [isValidEmails, gameId, onSuccess, tags, createInvitation, setParams]
   );
@@ -66,8 +69,8 @@ export default function InvitationForm({ gameId, onSuccess, existingInvitations 
     return (friendshipData.data as FriendsResult).filter(friend => friend.friend.id !== userId);
   }, [friendshipData, userId]);
 
-  const addFriendEmail = useCallback((email: string) => {
-    if (!tags.includes(email)) {
+  const addFriendEmail = useCallback((email: string | null) => {
+    if (email && !tags.includes(email)) {
       const newTags = [...tags, email];
       setTags(newTags);
       setValue("emails", newTags);
@@ -76,7 +79,7 @@ export default function InvitationForm({ gameId, onSuccess, existingInvitations 
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={onSubmit} className="space-y-4">
         <FormField
           control={form.control}
           name="emails"
@@ -106,22 +109,22 @@ export default function InvitationForm({ gameId, onSuccess, existingInvitations 
             {isFriendshipLoading ? (
               <p>Loading friends...</p>
             ) : friends.length ? (
-              friends.map((friend, index) => {
-                const isInvited = tags.includes(friend.friend.email) || existingInvitations.includes(friend.friend.email);
+              friends.map(({ friend }, index) => {
+                const isInvited = tags.includes(friend?.email ?? "") || existingInvitations.includes(friend.email);
                 return (
-                  <div 
-                    key={index} 
+                  <div
+                    key={index}
                     className={cn(
                       "flex items-center space-x-2 bg-secondary text-secondary-foreground rounded-full px-3 py-1",
                       isInvited ? "opacity-50 line-through pointer-events-none" : "cursor-pointer hover:bg-secondary/80"
                     )}
-                    onClick={() => !isInvited && addFriendEmail(friend.friend.email)}
+                    onClick={() => !isInvited && addFriendEmail(friend.email)}
                   >
                     <Avatar className="h-5 w-5">
-                      <AvatarImage src={friend.friend.image || "/default-avatar.png"} alt={friend.friend.name || "Friend"} />
-                      <AvatarFallback>{friend.friend.name?.charAt(0) || 'F'}</AvatarFallback>
+                      <AvatarImage src={friend.image || "/default-avatar.png"} alt={friend.name || "Friend"} />
+                      <AvatarFallback>{friend.name?.charAt(0) || 'F'}</AvatarFallback>
                     </Avatar>
-                    <span className="text-sm">{friend.friend.name}</span>
+                    <span className="text-sm">{friend.name}</span>
                   </div>
                 );
               })

@@ -34,7 +34,7 @@ model Friendship {
   user      User     @relation("Friends", fields: [userId], references: [id])
   friend    User     @relation("FriendsInverse", fields: [friendId], references: [id])
 
-//   @@unique([userId, friendId])
+  @@unique([userId, friendId])
 }
 
 

@@ -5,21 +5,18 @@ const prismaClient = PrismaClientInstance.getInstance();
 
 export async function create(friendshipData: Prisma.FriendshipCreateInput) {
   const prisma = PrismaClientInstance.getInstance();
-  const existingFriendship = await prisma.friendship.findUnique({
+  const existingFriendship = await prisma.friendship.findFirst({
     where: {
-      userId_friendId: {
-        userId: String(friendshipData.user?.connect?.id),
-        friendId: String(friendshipData.friend?.connect?.id),
-      },
+      AND: [
+        { userId: String(friendshipData.user?.connect?.id) },
+        { friendId: String(friendshipData.friend?.connect?.id) },
+      ],
     },
   });
 
   if (!existingFriendship) {
     await prisma.friendship.create({
-      data: {
-        user: { connect: { id: String(friendshipData.user?.connect?.id) } },
-        friend: { connect: { id: String(friendshipData.friend?.connect?.id) } },
-      },
+      data: friendshipData,
     });
   }
 }

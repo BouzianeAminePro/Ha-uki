@@ -26,12 +26,14 @@ export default function Squad({ users, isGameOwner, onUpdateSuccess }) {
   return (
     <div className={cn("flex flex-col md:flex-row md:gap-x-5 gap-y-5")}>
       <RosterRegistry
+        key={BenchType.OFFICIAL}
         roster={officialSquad}
         type={BenchType.OFFICIAL}
         isGameOwner={isGameOwner}
         onUpdateSuccess={onUpdateSuccess}
       />
       <RosterRegistry
+        key={"Squad list"}
         roster={squad}
         title="Squad list"
         isGameOwner={isGameOwner}
@@ -39,6 +41,7 @@ export default function Squad({ users, isGameOwner, onUpdateSuccess }) {
       />
       <RosterRegistry
         roster={reserveSquad}
+        key={BenchType.RESERVE}
         type={BenchType.RESERVE}
         isGameOwner={isGameOwner}
         onUpdateSuccess={onUpdateSuccess}
