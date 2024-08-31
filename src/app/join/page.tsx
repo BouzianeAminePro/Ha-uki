@@ -8,22 +8,24 @@ import * as userService from "@/services/user.service";
 import * as invitationService from "@/services/invitation.service";
 import * as friendshipService from "@/services/friendship.service";
 
-export default async function Page({ searchParams }) {
-  const searchParamsKeys = Object.keys(searchParams) ?? [];
-  if (
-    !searchParamsKeys.length ||
-    !searchParamsKeys.includes("gameId") ||
-    !searchParamsKeys.includes("email")
-  ) {
+export const dynamic='force-dynamic';
+export const runtime='edge';
+
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined }
+}) {
+  const { gameId, email } = searchParams;
+
+  if (!gameId || !email || typeof gameId !== 'string' || typeof email !== 'string') {
     redirect("/");
   }
 
-  console.log("searchParams", searchParams)
-
-  const game = await gameService.findById(searchParams.gameId);
+  const game = await gameService.findById(gameId);
   if (!game) redirect("/");
 
-  const user = await userService.findUserByEmail(searchParams.email);
+  const user = await userService.findUserByEmail(email);
   if (!user) redirect("/");
 
   const invitation = await invitationService.findByUserId(user.id, game.id);
