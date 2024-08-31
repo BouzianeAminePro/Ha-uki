@@ -18,6 +18,8 @@ export default async function Page({ searchParams }) {
     redirect("/");
   }
 
+  console.log("searchParams", searchParams)
+
   const game = await gameService.findById(searchParams.gameId);
   if (!game) redirect("/");
 
