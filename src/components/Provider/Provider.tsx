@@ -37,18 +37,17 @@ export default function Provider({
                 // which converts to 5 minutes
                 gcTime: 300000,
                 onError(error: any) {
-                  console.log("--------Error---------", error);
                   let title = "";
                   switch (error.response?.status) {
                     case 401:
                     case 403:
-                      title = "Unauthorized for this resource";
+                      title = "You don't have enough rights";
                       break;
                     case 404:
                       title = "Not found";
                       break;
                     default:
-                      title = "Opps! error on server call"
+                      title = "Opps! error on server request"
                   }
                   toast({
                     variant: "destructive",

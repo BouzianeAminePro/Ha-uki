@@ -39,6 +39,10 @@ export default async function Page({ searchParams }) {
       user: { connect: { id: gameCreator.id } },
       friend: { connect: { id: user.id } },
     });
+    await friendshipService.create({
+      user: { connect: { id: user.id } },
+      friend: { connect: { id: gameCreator.id } },
+    });
   }
 
   if (!newInvitation) redirect("/");
@@ -56,7 +60,7 @@ export default async function Page({ searchParams }) {
         , someone who wants you to join a game send you this invitation
       </div>
       {!!newInvitation && (
-        <Link href={`${process.env.SERVER_URL}/game`}>
+        <Link href={`${process.env.SERVER_URL}/game/${game.id}`}>
           <Button>Join us & the game</Button>
         </Link>
       )}
