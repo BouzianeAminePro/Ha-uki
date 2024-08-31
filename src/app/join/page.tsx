@@ -9,7 +9,6 @@ import * as invitationService from "@/services/invitation.service";
 import * as friendshipService from "@/services/friendship.service";
 
 export const dynamic='force-dynamic';
-export const runtime='edge';
 
 export default async function Page({
   searchParams,
