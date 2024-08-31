@@ -39,7 +39,7 @@ export default function Provider({
                 onError(error: any) {
                   console.log("--------Error---------", error);
                   let title = "";
-                  switch (error.status) {
+                  switch (error.response?.status) {
                     case 401:
                     case 403:
                       title = "Unauthorized for this resource";
