@@ -20,7 +20,11 @@ const InvitationCard = dynamic(
 );
 
 export default function Page() {
-  const { data = { records: [], count: 0 }, isPending } = useInvitations();
+  const { data = { records: [], count: 0 }, isPending } = useInvitations(
+    {
+      status: 'APPROVED',
+    }
+  );
   const { updateInvitation } = useInvitation();
   const { toast } = useToast();
   const queryClient = useQueryClient();

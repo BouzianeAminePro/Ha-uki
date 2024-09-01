@@ -3,19 +3,11 @@
 import Link from "next/link";
 import { useCallback, useState } from "react";
 import { Game, Invitation, User } from "@prisma/client";
-import { EnvelopeClosedIcon } from "@radix-ui/react-icons";
 import { useSession } from "next-auth/react";
 
 import { cn } from "@/lib";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import useGames from "@/hooks/useGames";
-import { Button } from "@/components/ui/button";
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { askInvitation } from "@/actions/askInvitation";
 import { useToast } from "@/components/ui/use-toast";
 import GameCard from "@/app/game/_components/GameCard/GameCard";
@@ -87,10 +79,7 @@ export default function GameContent() {
                         <>
                             {games?.data?.records.length ? (
                                 games?.data?.records?.map(
-                                    (
-                                        game: Game & { Invitation: Invitation[] },
-                                        index: number
-                                    ) => (
+                                    (game: Game & { Invitation: Invitation[] }, index: number) => (
                                         <div className={cn("flex flex-row")} key={index}>
                                             <Link href={`/game/${game.id}`}>
                                                 <GameCard
@@ -107,40 +96,24 @@ export default function GameContent() {
                                                         currentTab === "public" &&
                                                         !isGameOwnerOrInvited(game)
                                                     }
-                                                    // isParticipating={isUserParticipating(game)}
+                                                    onRequestJoin={async () => {
+                                                        try {
+                                                            await askInvitation(game.userId, game.id, session?.user?.email);
+                                                            await refetch();
+                                                            toast({
+                                                                title: "Success",
+                                                                description: "Request to join sent successfully",
+                                                            });
+                                                        } catch (error) {
+                                                            toast({
+                                                                title: "Error",
+                                                                description: "Failed to send request",
+                                                                variant: "destructive",
+                                                            });
+                                                        }
+                                                    }}
                                                 />
                                             </Link>
-                                            {currentTab === "public" &&
-                                                !isGameOwnerOrInvited(game) ? (
-                                                <div>
-                                                    <TooltipProvider>
-                                                        <Tooltip>
-                                                            <TooltipTrigger className="h-full">
-                                                                <Button
-                                                                    onClick={async () => {
-                                                                        await askInvitation(
-                                                                            game.userId,
-                                                                            game?.id,
-                                                                            session?.user?.email ?? undefined
-                                                                        );
-                                                                        await refetch();
-                                                                        toast({
-                                                                            title: "Information",
-                                                                            description: "Request sent",
-                                                                        });
-                                                                    }}
-                                                                    className="flex h-full rounded-tl-none rounded-bl-none"
-                                                                >
-                                                                    <EnvelopeClosedIcon />
-                                                                </Button>
-                                                            </TooltipTrigger>
-                                                            <TooltipContent>
-                                                                <p>Request to join the game</p>
-                                                            </TooltipContent>
-                                                        </Tooltip>
-                                                    </TooltipProvider>
-                                                </div>
-                                            ) : null}
                                         </div>
                                     )
                                 )

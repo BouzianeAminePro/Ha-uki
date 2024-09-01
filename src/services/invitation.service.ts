@@ -77,3 +77,14 @@ export async function deleteById(id: string) {
     }
   });
 }
+
+export async function updateById(id: string, data: Partial<Invitation>) {
+  if (!id) return false;
+
+  return await prismaClient.invitation.update({
+    where: {
+      id,
+    },
+    data,
+  });
+}

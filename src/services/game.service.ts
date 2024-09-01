@@ -69,6 +69,9 @@ export async function findById(id?: string | null) {
     where: { id },
     include: {
       Invitation: {
+        where: {
+          status: 'APPROVED'
+        },
         include: {
           user: {
             select: {

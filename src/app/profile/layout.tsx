@@ -12,12 +12,13 @@ export default function Layout({ children }: { children: ReactNode }) {
   const tabs = [
     { name: "General information", href: "/profile/information" },
     { name: "Invitations", href: "/profile/invitation" },
+    { name: "Requests", href: "/profile/request" },
   ];
 
   return (
-    <div className="flex flex-col w-full max-w-7xl mx-auto px-4 py-4 md:py-8">
-      <div className="flex flex-col md:flex-row">
-        <aside className="w-full md:w-64 mb-4 md:mb-0">
+    <div className="flex flex-col w-[100%] md:justify-center max-w-7xl mx-auto px-4 py-4 md:py-8">
+      <div className="flex flex-col w-[100%] md:flex-row md:justify-evenly">
+        <aside className="mb-4 md:mb-0 flex-0">
           <nav className="flex flex-row md:flex-col space-x-2 md:space-x-0 md:space-y-1 overflow-x-auto">
             {tabs.map((tab) => (
               <Link
@@ -35,8 +36,8 @@ export default function Layout({ children }: { children: ReactNode }) {
             ))}
           </nav>
         </aside>
-        <Separator orientation="vertical" className="mx-6 hidden md:block" />
-        <main className="flex-1 md:ml-8">
+        <Separator orientation="vertical" className="hidden md:block" />
+        <main className="flex-[.5]">
           {children}
         </main>
       </div>

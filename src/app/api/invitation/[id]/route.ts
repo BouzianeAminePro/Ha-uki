@@ -3,10 +3,11 @@ import { PrismaClientInstance } from "@/lib";
 import { getCurrentSessionUser } from "@/services/session.service";
 import * as invitationService from "@/services/invitation.service";
 import * as gameService from "@/services/game.service";
+import { sendMail } from "@/services/mailer.service";
+import { findUserById } from "@/services/user.service";
 
 export async function PATCH(request: NextRequest, { params: { id } }) {
   const body = await request.json();
-  const prismaClient = PrismaClientInstance.getInstance();
 
   if (!id)
     return NextResponse.json(
@@ -14,9 +15,7 @@ export async function PATCH(request: NextRequest, { params: { id } }) {
       { status: 400 }
     );
 
-  let invitation = await prismaClient.invitation.findUnique({
-    where: { id },
-  });
+  const invitation = await invitationService.findById(id);
 
   if (!invitation) {
     return NextResponse.json(null, {
@@ -25,22 +24,62 @@ export async function PATCH(request: NextRequest, { params: { id } }) {
     });
   }
 
-  if (Object.keys(body).length > 1 || !Object.keys(body).includes('answer')) {  
-    const user = await getCurrentSessionUser();
-    if (!user || user.Game.every((game) => game?.id !== invitation?.gameId)) {
-      return NextResponse.json(null, {
-        status: 403,
-        statusText: "You don't have the rights to update this game",
-      });
-    }
+  const user = await getCurrentSessionUser();
+
+  if (!user) {
+    return NextResponse.json(null, {
+      status: 401,
+      statusText: "An active session is mandatory for this request",
+    });
   }
 
-  invitation = await prismaClient.invitation.update({
-    where: {
-      id,
-    },
-    data: body,
-  });
+  // Check if the user is the requester
+  if (user.id === invitation.userId) {
+    // Requester can only update the answer field
+    if (Object.keys(body).length !== 1 || !body.hasOwnProperty('answer')) {
+      return NextResponse.json(null, {
+        status: 403,
+        statusText: "Requester can only update the answer field",
+      });
+    }
+    await invitationService.updateById(id, { answer: body.answer });
+    return NextResponse.json({ message: "Answer updated successfully" });
+  }
+
+  // For game owner, continue with existing logic
+  const game = await gameService.findById(invitation.gameId);
+  if (!game || (game.userId !== user.id)) {
+    return NextResponse.json(null, {
+      status: 403,
+      statusText: "Only the owner of the game can update this invitation",
+    });
+  }
+
+  const originalStatus = invitation.status;
+
+  await invitationService.updateById(id, body);
+
+  // Check if the status has changed
+  if (body.status && body.status !== originalStatus) {
+    const requester = await findUserById(invitation.userId);
+    if (!requester) {
+      return NextResponse.json(null, {
+        status: 500,
+        statusText: "The requester of this invitation doesn't exists",
+      });
+    }
+    // Send email to the requester
+    await sendMail(
+      requester.email,
+      "Invitation Status Update",
+      `The status of your invitation to the ${game.name} game, has been updated to: ${body.status}`,
+    );
+
+    if (body.status === "DENIED") {
+      await invitationService.deleteById(id);
+      return NextResponse.json({ message: "Invitation rejected and deleted" });
+    }
+  }
 
   return NextResponse.json(invitation);
 }
@@ -51,9 +90,9 @@ export async function DELETE(request: NextRequest, { params: { id } }) {
       { message: "The id is mandotary for this request" },
       { status: 400 }
     );
-  
+
   const user = await getCurrentSessionUser();
-  
+
   if (!user) {
     return NextResponse.json(
       { message: "An actif session is mandotary for this request" },

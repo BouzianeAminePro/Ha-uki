@@ -65,6 +65,8 @@ model Invitation {
     userId          String?
     game            Game?      @relation(fields: [gameId], references: [id])
     user            User?      @relation(fields: [userId], references: [id])
+    isRequest       Boolean    @default(false)
+    status          InvitationStatus @default(APPROVED)
 
     @@index([userId, gameId])
 }
@@ -72,4 +74,10 @@ model Invitation {
 enum BenchType {
     OFFICIAL
     RESERVE
+}
+
+enum InvitationStatus {
+    PENDING
+    APPROVED
+    DENIED
 }

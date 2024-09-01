@@ -10,29 +10,39 @@ import { getCurrentSessionUser } from "@/services/session.service";
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
 
-  let whereClause = {};
-  searchParams.forEach((value: string, key) => {
-    whereClause = { [key]: JSON.parse(value) };
+  let whereClause: any = {};
+  
+  // Add filters for non-relational fields
+  const filterFields = ['id', 'answer', 'emailSent', 'benchType', 'validInvitation', 'gameId', 'userId', 'isRequest', 'status'];
+  
+  filterFields.forEach((field) => {
+    const value = searchParams.get(field);
+    if (value !== null) {
+      whereClause[field] = field === 'answer' || field === 'emailSent' || field === 'validInvitation' || field === 'isRequest'
+        ? value === 'true'
+        : field === 'benchType' || field === 'status'
+          ? value
+          : field === 'id' || field === 'gameId' || field === 'userId'
+            ? value
+            : JSON.parse(value);
+    }
   });
 
+  // Keep existing user filter
   if (!Object.keys(whereClause).length) {
     const user = await getCurrentSessionUser();
-
     if (user) {
-      whereClause = { ...whereClause, userId: user?.id };
+      whereClause.userId = user.id;
     }
   }
 
-  // Add condition to get only future or current day invitations
+  // Keep existing date filter
   const currentDate = new Date();
   currentDate.setHours(0, 0, 0, 0);
 
-  whereClause = {
-    ...whereClause,
-    game: {
-      startDate: {
-        gte: currentDate,
-      },
+  whereClause.game = {
+    startDate: {
+      gte: currentDate,
     },
   };
 
