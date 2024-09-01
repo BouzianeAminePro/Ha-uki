@@ -53,9 +53,6 @@ export default function Page() {
     [updateInvitation, toast, queryClient]
   );
 
-  console.log("records", data?.records)
-  console.log("session", session?.user?.id)
-
   return (
     <div className={cn("flex flex-col w-full h-full p-5 md:p-0 gap-y-5")}>
       <div className={cn("scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0")}>
