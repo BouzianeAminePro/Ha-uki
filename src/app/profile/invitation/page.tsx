@@ -14,15 +14,18 @@ import { useInvitation } from "@/hooks/useInvitation";
 import { QueryKeys } from "@/consts/types";
 import { useToast } from "@/components/ui/use-toast";
 import Skeleton from "@/components/ui/skeleton";
+import { useSession } from "next-auth/react";
 
 const InvitationCard = dynamic(
   () => import("@/components/Invitation/InvitationCard/InvitationCard")
 );
 
 export default function Page() {
+  const { data: session } = useSession();
   const { data = { records: [], count: 0 }, isPending } = useInvitations(
     {
       status: 'APPROVED',
+      userId: session?.user?.id
     }
   );
   const { updateInvitation } = useInvitation();

@@ -8,6 +8,7 @@ interface InvitationFilters {
   isRequest?: boolean;
   status?: 'PENDING' | 'APPROVED' | 'DENIED';
   gameUserId?: string;
+  userId?: string;
 }
 
 export function useInvitations(filters?: InvitationFilters) {
