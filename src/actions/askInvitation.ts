@@ -1,4 +1,3 @@
-'use server'
 import { content } from "@/mails/askInvitation";
 import { findById } from "@/services/game.service";
 import { create } from "@/services/invitation.service";
@@ -6,6 +5,8 @@ import { sendMail } from "@/services/mailer.service"
 import { findUserByEmail, findUserById } from "@/services/user.service";
 
 export async function askInvitation(gameOwnerId: string, gameId: string, email?: string) {
+    'use server';
+
     const gameOwner = await findUserById(gameOwnerId);
     if (!gameOwner) {
         throw new Error('This game owner doesn\'t exist');
