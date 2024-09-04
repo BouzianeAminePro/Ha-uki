@@ -1,11 +1,17 @@
+'use server';
+
 import { content } from "@/mails/askInvitation";
 import { findById } from "@/services/game.service";
 import { create } from "@/services/invitation.service";
 import { sendMail } from "@/services/mailer.service"
+import { getCurrentSessionUser } from "@/services/session.service";
 import { findUserByEmail, findUserById } from "@/services/user.service";
 
 export async function askInvitation(gameOwnerId: string, gameId: string, email?: string) {
-    'use server';
+    const userSession = await getCurrentSessionUser();
+    if (!userSession) {
+        throw new Error('Unauthorized');
+    }
 
     const gameOwner = await findUserById(gameOwnerId);
     if (!gameOwner) {
